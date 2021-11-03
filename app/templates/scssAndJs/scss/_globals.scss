@@ -24,8 +24,12 @@ button, .button{
     border-radius: 50px;
     background: linear-gradient(to right,$limeGreen,$brightCyan);
     color: $white;
-    border-color: $grayishBlue;
     cursor: pointer;
+}
+
+.container{
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
 }
 
 .flex{

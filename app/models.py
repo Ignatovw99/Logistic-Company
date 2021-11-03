@@ -59,6 +59,7 @@ class ShippingAddress(db.Model):
     def __repr__(self):
         return f"ShippingAddress(office_id={self.office_id}, address={self.address})"
 
+
 class Shipment(db.Model):
     __tablename__ = "shipments"
 
@@ -81,3 +82,4 @@ class Shipment(db.Model):
 
     def __repr__(self):
         return f"Shipment(weight={self.weight}, status={self.status}, status={self.status})"
+        

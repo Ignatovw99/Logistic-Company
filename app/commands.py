@@ -94,3 +94,4 @@ def seed_database():
     offices = generate_offices()
     employees = generate_employees(users, offices)
     generate_shipments(employees[0], employees[1], users, offices)
+    

@@ -9,7 +9,7 @@ class User(db.Model):
     first_name = db.Column(db.String(40), nullable=False)
     last_name = db.Column(db.String(40), nullable=False)
     address = db.Column(db.String(200))
-    telephone_number = db.Column(db.String(15), nullable=False)
+    phone_number = db.Column(db.String(30), nullable=False)
     email = db.Column(db.String(60), nullable=False, unique=True)
     password = db.Column(db.String(60), nullable=False)
 
@@ -77,9 +77,9 @@ class Shipment(db.Model):
     to_address = db.relationship(ShippingAddress, foreign_keys=to_address_id, uselist=False, lazy="select")
     sender = db.relationship(User, foreign_keys=sender_id, lazy="select")
     receiver = db.relationship(User, foreign_keys=receiver_id, lazy="select")
-    acceptor = db.relationship(User, foreign_keys=acceptor_id, lazy="select")
-    deliverer = db.relationship(User, foreign_keys=deliverer_id, lazy="select")
+    acceptor = db.relationship(Employee, foreign_keys=acceptor_id, lazy="select")
+    deliverer = db.relationship(Employee, foreign_keys=deliverer_id, lazy="select")
 
     def __repr__(self):
-        return f"Shipment(weight={self.weight}, status={self.status}, status={self.status})"
+        return f"Shipment(weight={self.weight}, status={self.status})"
         

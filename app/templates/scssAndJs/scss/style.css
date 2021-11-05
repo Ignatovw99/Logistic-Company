@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .has-fade {
   visibility: hidden;
 }
@@ -94,7 +95,7 @@ a, a:visited, a:hover {
 }
 
 button, .button {
-  padding: 1rem 2.1875;
+  padding: 6px;
   border-radius: 50px;
   background: -webkit-gradient(linear, left top, right top, from(#31d35c), to(#2bb7da));
   background: linear-gradient(to right, #31d35c, #2bb7da);
@@ -264,5 +265,13 @@ button, .button {
   color: #2d314d;
   display: block;
   margin-top: 10px;
+}
+
+.hero__image {
+  background-image: url("/app/templates/images/—Pngtree—delivery service with maps on_5367224.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  min-height: 10rem;
 }
 /*# sourceMappingURL=style.css.map */

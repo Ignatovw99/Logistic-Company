@@ -268,10 +268,26 @@ button, .button {
 }
 
 .hero__image {
+  position: relative;
   background-image: url("/app/templates/images/—Pngtree—delivery service with maps on_5367224.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
-  min-height: 10rem;
+  min-height: 15rem;
+}
+
+.hero__text {
+  text-align: center;
+}
+
+.hero__text h2 {
+  font-weight: 300;
+  font-size: 1.875rem;
+  line-height: 1.15;
+  color: #2d314d;
+}
+
+.hero__text p {
+  line-height: 1;
 }
 /*# sourceMappingURL=style.css.map */

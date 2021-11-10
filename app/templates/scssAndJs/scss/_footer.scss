@@ -1,0 +1,45 @@
+.footer{
+    background-color: $darkBlue;
+    color: $white;
+    padding: 2.5rem;
+    text-align: center;
+
+    a{
+        color: $white;
+    }
+
+    img{
+        height: 1.875rem;
+        //width: 30px;
+        
+    }
+
+    &__logo{
+        margin-top: 0px;
+        margin-bottom: 1.375rem;
+    }
+
+    &__social{
+        margin-bottom: 1.375rem;
+        display: inline-block;
+        a:not(:last-child){
+            
+            margin-right: 1rem;
+        }
+       
+    }
+
+    &__links{
+        margin-bottom: 1.375rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        a{
+            line-height: 2;
+        }
+    }
+
+    &__cta{
+        margin-bottom: 1.375rem;
+    }
+}

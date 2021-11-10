@@ -94,17 +94,6 @@
         }
     }
 
-    &__sinlogout{
-        font-size: 1rem;
-        color: $white;
-        padding: 6px;
-        transition: opacity 300ms ease-in-out;
-
-        &:hover{
-            opacity: 0.75;
-        }
-   
-    }
 
     &__menu{
         position: absolute;
@@ -124,6 +113,7 @@
             margin-top: 10px;
             }
             
-        
+        z-index: 1;
     }
+    
 }

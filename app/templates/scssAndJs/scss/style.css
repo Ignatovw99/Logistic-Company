@@ -387,9 +387,28 @@ h2 {
   height: 1.875rem;
 }
 
+@media (min-width: 64em) {
+  .footer {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: (1fr)[3];
+        grid-template-columns: repeat(3, 1fr);
+    -ms-grid-rows: ()[1];
+        grid-template-rows: repeat(1);
+        grid-template-areas: "logo links cta";
+    justify-items: start;
+  }
+}
+
 .footer__logo {
   margin-top: 0px;
   margin-bottom: 1.375rem;
+}
+
+@media (min-width: 64em) {
+  .footer__logo {
+    grid-area: logo;
+  }
 }
 
 .footer__social {
@@ -419,7 +438,22 @@ h2 {
   line-height: 2;
 }
 
+@media (min-width: 64em) {
+  .footer__links {
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: start;
+    grid-area: links;
+  }
+}
+
 .footer__cta {
   margin-bottom: 1.375rem;
+}
+
+@media (min-width: 64em) {
+  .footer__cta {
+    grid-area: cta;
+  }
 }
 /*# sourceMappingURL=style.css.map */

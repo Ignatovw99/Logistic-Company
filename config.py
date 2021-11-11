@@ -1,3 +1,6 @@
+import secrets
+
+
 class Config():
     DEBUG = False
     TESTING = False
@@ -10,6 +13,8 @@ class Config():
 
     SQLALCHEMY_DATABASE_URI = f"mysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    SECRET_KEY = secrets.token_hex()
 
 
 class DevelopmentConfig(Config):

@@ -15,20 +15,22 @@ class User(db.Model):
     email = db.Column(db.String(60), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
 
-
     @property
     def password(self):
         raise AttributeError("password is not a readable attribute")
-
     
     @password.setter
     def password(self, password):
         self.password_hash = generate_password_hash(password)
 
-
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def is_authenticated(self):
+        return not "" == self.email and not self.email is None
+
+    def is_anonymous(self):
+        return not self.is_authenticated()
 
     def __repr__(self):
         return f"User(first_name={self.first_name}, last_name={self.last_name})"

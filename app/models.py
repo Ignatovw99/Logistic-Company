@@ -1,4 +1,5 @@
 from app import db
+from secrets import token_urlsafe 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import enum
@@ -14,6 +15,8 @@ class User(db.Model):
     phone_number = db.Column(db.String(30), nullable=False)
     email = db.Column(db.String(60), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
+    
+    remember_hashes = db.relationship("Remember", backref="user", lazy="dynamic", cascade="all, delete-orphan")
 
     @property
     def password(self):
@@ -32,8 +35,44 @@ class User(db.Model):
     def is_anonymous(self):
         return not self.is_authenticated()
 
+    def create_remember_token(self):
+        remember = Remember(self.id)
+        db.session.add(remember)
+        db.session.commit()
+        return remember.token
+
+    def check_remember_token(self, token):
+        if token:
+            for remember_hash in self.remember_hashes:
+                if remember_hash.check_token(token):
+                    return True
+        return False
+
     def __repr__(self):
         return f"User(first_name={self.first_name}, last_name={self.last_name})"
+
+
+class Remember(db.Model):
+    __tablename__ = "remembers"
+
+    id = db.Column(db.Integer, primary_key=True)
+    remember_hash = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+    def __init__(self, user_id):
+        self.generate_token_hash()
+        self.user_id = user_id
+        
+    def generate_token_hash(self):
+        # This token is a temporary property. It will only exist until the instance of the Remember model gets deleted
+        self.token = token_urlsafe(20)
+        self.remember_hash = generate_password_hash(self.token)
+
+    def check_token(self, token):
+        return check_password_hash(self.remember_hash, token)
+
+    def __repr__(self):
+        return f"Remember(user={self.user}, remember_hash={self.remember_hash})"
 
 
 class Employee(db.Model):

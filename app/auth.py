@@ -1,7 +1,8 @@
-from flask import session, g
+from flask import session, g, request
 from werkzeug.local import LocalProxy
-from app import app
-from app.models import User
+from app import app, db
+from app.models import User, Remember
+from itsdangerous.url_safe import URLSafeSerializer
 
 
 current_user = LocalProxy(lambda: load_user())
@@ -12,7 +13,10 @@ def login_user(user):
 
 
 def logout_user():
-    session.pop("user_id")
+    user_id = session.pop("user_id")
+    Remember.query.filter_by(user_id=user_id).delete()
+    db.session.commit()
+    g._current_user = False
 
 
 def load_user():
@@ -23,12 +27,20 @@ def load_user():
     """
     _current_user = getattr(g, "_current_user", None)
 
-    if _current_user is None and session.get("user_id"):
-        user = User.query.get(session.get("user_id"))
-        if user:
-            _current_user = g._current_user = user
-            
     if _current_user is None:
+        user = None
+        if session.get("user_id"):
+            user = User.query.get(session.get("user_id"))
+        elif request.cookies.get("user_id"):
+            user = User.query.get(
+                int(decrypt_cookie(request.cookies.get("user_id")))
+            )
+            if user and user.check_remember_token(decrypt_cookie(request.cookies.get("remember_token"))):
+                login_user(user)
+        
+        _current_user = g._current_user = user
+        
+    if not _current_user:
         # Create an anonymous user
         _current_user = User()
 
@@ -41,3 +53,29 @@ def inject_current_user():
     Inject the current logged-in user as a variable into the context of the application templates
     """
     return dict(current_user=current_user)
+
+
+def encrypt_cookie(cookie_content):
+    serializer = URLSafeSerializer(app.config["SECRET_KEY"], salt="cookie")
+    encrypted_cookie_content = serializer.dumps(cookie_content)
+    return encrypted_cookie_content
+
+
+def decrypt_cookie(encrypted_cookie_content):
+    serializer = URLSafeSerializer(app.config["SECRET_KEY"], salt="cookie")
+    try:
+        cookie_content = serializer.loads(encrypted_cookie_content)
+    except :
+        cookie_content = -1
+    return cookie_content
+
+
+def add_remember_cookies(response, user):
+    remember_token = user.create_remember_token()
+    response.set_cookie("remember_token", encrypt_cookie(remember_token), max_age=60*60*24*100)
+    response.set_cookie("user_id", encrypt_cookie(user.id), max_age=60*60*24*100)
+
+
+def delete_remember_cookies(response):
+    response.set_cookie("remember_token", "", max_age=0)
+    response.set_cookie("user_id", "", max_age=0)

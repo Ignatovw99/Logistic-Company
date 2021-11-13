@@ -1,8 +1,9 @@
-from flask import session, g, request
+from flask import session, g, request, flash, redirect, url_for
 from werkzeug.local import LocalProxy
 from app import app, db
 from app.models import User, Remember
 from itsdangerous.url_safe import URLSafeSerializer
+from functools import wraps
 
 
 current_user = LocalProxy(lambda: load_user())
@@ -79,3 +80,14 @@ def add_remember_cookies(response, user):
 def delete_remember_cookies(response):
     response.set_cookie("remember_token", "", max_age=0)
     response.set_cookie("user_id", "", max_age=0)
+
+
+def login_required(view_func):
+    @wraps(view_func)
+    def handle_login_requirement(*args, **kwargs):
+        if current_user.is_anonymous():
+            flash("You need to be logged in to access this page", "error")
+            return redirect(url_for("login"))
+        return view_func(*args, **kwargs)
+
+    return handle_login_requirement

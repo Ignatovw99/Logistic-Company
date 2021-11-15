@@ -1,6 +1,6 @@
-from flask import session, g, request, flash, redirect, url_for
+from flask import session, g, request, current_app as app, flash, redirect, url_for
 from werkzeug.local import LocalProxy
-from app import app, db
+from app import db
 from app.models import User, Remember
 from itsdangerous.url_safe import URLSafeSerializer
 from functools import wraps

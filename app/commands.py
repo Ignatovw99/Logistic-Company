@@ -1,4 +1,5 @@
-from app import app, db, models
+from flask import current_app as app
+from app import db, models
 from faker import Faker
 
 

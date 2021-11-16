@@ -16,7 +16,7 @@ class Config():
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_ECHO=True
+    SQLALCHEMY_ECHO = True
 
 
 class ProductionConfig(Config):
@@ -25,6 +25,7 @@ class ProductionConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+    TEST_DATABASE_PREFIX = "sqlite:///"
 
 
 env_config = {

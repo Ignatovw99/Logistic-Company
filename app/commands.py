@@ -1,4 +1,5 @@
-from app import app, db, models
+from flask import current_app as app
+from app import db, models
 from faker import Faker
 
 
@@ -31,7 +32,15 @@ def seed_database():
 
         db.session.commit()
         return users
+    
+    
+    def generate_remember_hashes(users):
+        for x in range(5):
+            remember = models.Remember(users[x].id)
+            db.session.add(remember)
 
+        db.session.commit()
+        
 
     def generate_offices():
         offices = []
@@ -91,6 +100,7 @@ def seed_database():
 
 
     users = generate_users()
+    generate_remember_hashes(users)
     offices = generate_offices()
     employees = generate_employees(users, offices)
     generate_shipments(employees[0], employees[1], users, offices)

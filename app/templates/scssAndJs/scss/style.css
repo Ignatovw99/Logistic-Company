@@ -505,6 +505,7 @@ h2 {
 }
 
 .profile__menu {
+  width: 180px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -512,6 +513,7 @@ h2 {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
+  border-right: 2px solid #2d314d;
 }
 
 .profile__menu a {
@@ -519,6 +521,7 @@ h2 {
   font-size: 1.5rem;
   -webkit-transition: color 150ms ease-in-out;
   transition: color 150ms ease-in-out;
+  margin-left: 1rem;
 }
 
 .profile__menu a:not(:last-child) {
@@ -527,6 +530,10 @@ h2 {
 
 .profile__menu a:last-child {
   margin-bottom: 8.75rem;
+}
+
+.profile__menu a:first-child {
+  margin-top: 2.5rem;
 }
 
 .profile__menu a:hover {

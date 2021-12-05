@@ -319,7 +319,7 @@ h2 {
 
 .hero__image {
   position: relative;
-  background-image: url("/app/templates/images/—Pngtree—delivery service with maps on_5367224.png");
+  background-image: url("/static/images/—Pngtree—delivery service with maps on_5367224.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -395,7 +395,8 @@ h2 {
         grid-template-columns: repeat(2, 1fr);
     -ms-grid-rows: 1fr auto;
         grid-template-rows: 1fr auto;
-        grid-template-areas: "logo links cta" "social links copyright";
+        grid-template-areas: "logo links cta"
+ "social links copyright";
     justify-items: start;
   }
 }

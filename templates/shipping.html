@@ -44,6 +44,29 @@
 
                 {% endif %}
                 {% endwith %}
+		    
+		 <form action="{{url_for('send_by_client_shipments')}}" method="POST">
+                Filter by sender id:<input type="number"  name="id_sender" value={{ id }}>
+                  <button class="btn btn-primary" type="submit">Filter</button>
+              </form>
+            <form action="{{url_for('received_by_client_shipments')}}" method="POST">
+                Filter by receiver id:<input type="number"  name="id_receiver" value="">
+                  <button class="btn btn-primary" type="submit">Filter</button>
+              </form>
+            <form action="{{url_for('shipments_registered_by_employee')}}" method="POST">
+                 Filter by employee's id:<input type="number"  name="id_employee" value="">
+                  <button class="btn btn-primary" type="submit">Filter</button>
+              </form>
+            <form action="{{url_for('shipments_status')}}" method="POST">
+                Filter by status:<select  name="status_filter" value="">
+                         {% for row in statuses %}
+                        <option value={{row}}> {{row}}</option>
+                        {% endfor %}
+
+                    </select>
+                  <button class="btn btn-primary" type="submit">Filter</button>
+              </form>
+
 
 
                 <table class="table table-hover table-dark">

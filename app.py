@@ -2,8 +2,8 @@ import enum
 
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-
+from fpdf import FPDF
+rom sqlalchemy import exists, or_
 from sqlalchemy.orm import relationship, joinedload, session, Load, contains_eager
 
 app = Flask(__name__)

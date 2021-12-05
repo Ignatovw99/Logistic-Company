@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+
+
+
+{% block title %} Shipments {% endblock %}
+
+
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col md-12">
+
+            <div class="jumbotron p-3">
+
+                <h2>All your <b>Shipments</b>   </h2>
+
+
+
+
+                </div>
+
+
+
+
+                <table class="table table-hover table-dark">
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Weight</th>
+                        <th>Status</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Sender</th>
+                        <th>Receiver</th>
+                        <th>Acceptor</th>
+                        <th>Deliverer</th>
+{#                        <th>Price</th>#}
+
+
+                    </tr>
+
+
+                   {% for row in shipments_client %}
+
+
+                    <tr>
+                        <td>{{row.id}}</td>
+                        <td>{{row.weight}}</td>
+                        <td>{{row.status}}</td>
+                        <td>{{row.from_address_id}}</td>
+                        <td>{{row.to_address_id}}</td>
+                        <td>{{row.sender}}</td>
+                        <td>{{row.receiver}}</td>
+                        <td>{{row.acceptor}}</td>
+                        <td>{{row.deliverer}}</td>
+{#                        <td>{{row.price}}</td>#}
+
+
+
+
+
+                    </tr>
+
+               {% endfor %}
+                </table>
+
+        </div>
+
+    </div>
+
+    </div>
+
+
+
+{% endblock %}

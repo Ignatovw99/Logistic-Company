@@ -463,6 +463,480 @@ def delete_client(id):
 
 
 
+# ------------------------------R e p o r t s----------------------------------------------------------
+
+
+@app.route('/download/report/employees/pdf')
+def download_report_employees():
+    result = Employee.query.all()
+    pdf = FPDF()
+    pdf.add_page()
+
+    page_width = pdf.w
+
+    pdf.set_font('Times', 'B', 12)
+    pdf.cell(page_width, 0.0, 'Employees Data', align='C')
+    pdf.ln(10)
+
+    pdf.set_font('Courier', '', 8)
+
+    col_width = page_width / 30
+
+    pdf.ln(1)
+
+    th = pdf.font_size
+
+    for row in result:
+        pdf.cell(col_width, th, "ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.user.id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "First Name")
+        pdf.ln(th)
+        pdf.cell(col_width, th, row.user.first_name)
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Last Name")
+        pdf.ln(th)
+        pdf.cell(col_width, th, row.user.last_name)
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Address")
+        pdf.ln(th)
+        pdf.cell(col_width, th, row.user.address)
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Phone")
+        pdf.ln(th)
+        pdf.cell(col_width, th, row.user.phone_number)
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Email")
+        pdf.ln(th)
+        pdf.cell(col_width, th, row.user.email)
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Office ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.office_id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "==========================================================================")
+        pdf.ln(th)
+        pdf.ln(th)
+
+
+
+    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf',
+                    headers={'Content-Disposition': 'attachment;filename=employees_report.pdf'})
+
+
+@app.route('/download/report/clients/pdf')
+def download_report_clients():
+    result = User.query.filter(~ exists().where(User.id == Employee.id))
+    pdf = FPDF()
+    pdf.add_page()
+
+    page_width = pdf.w
+
+    pdf.set_font('Times', 'B', 12)
+    pdf.cell(page_width, 0.0, 'Clients Data', align='C')
+    pdf.ln(10)
+
+    pdf.set_font('Courier', '', 8)
+
+    col_width = page_width / 30
+
+    pdf.ln(1)
+
+    th = pdf.font_size
+
+    for row in result:
+        pdf.cell(col_width, th, "ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "First Name")
+        pdf.ln(th)
+        pdf.cell(col_width, th, row.first_name)
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Last Name")
+        pdf.ln(th)
+        pdf.cell(col_width, th, row.last_name)
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Address")
+        pdf.ln(th)
+        pdf.cell(col_width, th, row.address)
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Phone")
+        pdf.ln(th)
+        pdf.cell(col_width, th, row.phone_number)
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Email")
+        pdf.ln(th)
+        pdf.cell(col_width, th, row.email)
+        pdf.ln(th)
+        pdf.cell(col_width, th, "==========================================================================")
+        pdf.ln(th)
+        pdf.ln(th)
+
+
+    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf',
+                    headers={'Content-Disposition': 'attachment;filename=clients_report.pdf'})
+
+
+@app.route('/download/report/shipments/pdf')
+def download_report_shipments():
+    result =Shipment.query.all()
+    pdf = FPDF()
+    pdf.add_page()
+
+    page_width = pdf.w
+
+    pdf.set_font('Times', 'B', 12)
+    pdf.cell(page_width, 0.0, 'Shipments Data', align='C')
+    pdf.ln(10)
+
+    pdf.set_font('Courier', '', 7)
+
+    col_width = page_width / 30
+
+    pdf.ln(1)
+
+    th = pdf.font_size
+
+    for row in result:
+        pdf.cell(col_width, th, "ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Weight")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.weight))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Status")
+        pdf.ln(th)
+        pdf.cell(col_width * 7, th, str(row.status))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "From Address ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.from_address_id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "To Address ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.to_address_id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Sender")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.sender))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Receiver")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.receiver))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Acceptor")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.acceptor))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Deliverer")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.deliverer))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "==========================================================================")
+        pdf.ln(th)
+        pdf.ln(th)
+
+
+    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf',
+                    headers={'Content-Disposition': 'attachment;filename=shipments_report.pdf'})
+
+
+@app.route('/download/report/shipments-by-employee/pdf', methods=['GET', 'POST'])
+def download_report_shipments_by_employee():
+    employee_id = request.form['id_employee']
+    employee = Employee.query.get(employee_id);
+
+    result = Shipment.query.filter(employee == Shipment.acceptor)
+    pdf = FPDF()
+    pdf.add_page()
+
+    page_width = pdf.w
+
+    pdf.set_font('Times', 'B', 12)
+    pdf.cell(page_width, 0.0, 'Shipments Data', align='C')
+    pdf.ln(10)
+
+    pdf.set_font('Courier', '', 7)
+
+    col_width = page_width / 30
+
+    pdf.ln(1)
+
+    th = pdf.font_size
+
+    for row in result:
+        pdf.cell(col_width, th, "ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Weight")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.weight))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Status")
+        pdf.ln(th)
+        pdf.cell(col_width * 7, th, str(row.status))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "From Address ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.from_address_id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "To Address ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.to_address_id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Sender")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.sender))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Receiver")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.receiver))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Acceptor")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.acceptor))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Deliverer")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.deliverer))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "==========================================================================")
+        pdf.ln(th)
+        pdf.ln(th)
+
+
+
+    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf',
+                    headers={'Content-Disposition': 'attachment;filename=shipments_by_employee_report.pdf'})
+
+@app.route('/download/report/shipments-by-sender/pdf',methods=['GET', 'POST'])
+def download_report_shipments_by_sender():
+    sender_id = request.form['id_sender']
+    client = User.query.get(sender_id);
+
+    result = Shipment.query.filter(client == Shipment.sender)
+    pdf = FPDF()
+    pdf.add_page()
+
+    page_width = pdf.w
+
+    pdf.set_font('Times', 'B', 12)
+    pdf.cell(page_width, 0.0, 'Shipments Data', align='C')
+    pdf.ln(10)
+
+    pdf.set_font('Courier', '', 7)
+
+    col_width = page_width / 30
+
+    pdf.ln(1)
+
+    th = pdf.font_size
+
+    for row in result:
+        pdf.cell(col_width, th, "ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Weight")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.weight))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Status")
+        pdf.ln(th)
+        pdf.cell(col_width * 7, th, str(row.status))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "From Address ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.from_address_id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "To Address ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.to_address_id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Sender")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.sender))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Receiver")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.receiver))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Acceptor")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.acceptor))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Deliverer")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.deliverer))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "==========================================================================")
+        pdf.ln(th)
+        pdf.ln(th)
+
+
+
+    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf',
+                    headers={'Content-Disposition': 'attachment;filename=shipments_by_sender_report.pdf'})
+
+
+
+@app.route('/download/report/', methods=['GET', 'POST'])
+def download_report():
+    status_list = [ShippingStatus.SHIPPED, ShippingStatus.DELIVERED]
+    return render_template("download.html",statuses = status_list)
+
+
+
+@app.route('/download/report/shipments-by-receiver/pdf', methods=['GET', 'POST'])
+def download_report_shipments_by_receiver():
+    receiver_id = request.form['id_receiver']
+    client = User.query.get(receiver_id);
+
+    result = Shipment.query.filter(client == Shipment.receiver)
+    pdf = FPDF()
+    pdf.add_page()
+
+    page_width = pdf.w
+
+    pdf.set_font('Times', 'B', 12)
+    pdf.cell(page_width, 0.0, 'Shipments Data', align='C')
+    pdf.ln(10)
+
+    pdf.set_font('Courier', '', 7)
+
+    col_width = page_width / 30
+
+    pdf.ln(1)
+
+    th = pdf.font_size
+
+    for row in result:
+        pdf.cell(col_width, th, "ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.id) )
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Weight")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.weight))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Status")
+        pdf.ln(th)
+        pdf.cell(col_width*7, th, str(row.status))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "From Address ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.from_address_id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "To Address ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.to_address_id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Sender")
+        pdf.ln(th)
+        pdf.cell(col_width*15, th, str(row.sender))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Receiver")
+        pdf.ln(th)
+        pdf.cell(col_width*15, th, str(row.receiver))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Acceptor")
+        pdf.ln(th)
+        pdf.cell(col_width*15, th, str(row.acceptor))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Deliverer")
+        pdf.ln(th)
+        pdf.cell(col_width*15, th, str(row.deliverer))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "==========================================================================")
+        pdf.ln(th)
+        pdf.ln(th)
+
+
+    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf',
+                    headers={'Content-Disposition': 'attachment;filename=shipments_by_receiver_report.pdf'})
+
+
+@app.route('/download/report/shipments-by-status/pdf' ,methods=['GET', 'POST'])
+def download_report_shipments_by_status():
+    status_form = request.form['status_filter']
+
+    if status_form == str(ShippingStatus.SHIPPED):
+        status = ShippingStatus.SHIPPED
+    else:
+        status = ShippingStatus.DELIVERED
+
+    result = Shipment.query.filter(Shipment.status == status)
+    pdf = FPDF()
+    pdf.add_page()
+
+    page_width = pdf.w
+
+    pdf.set_font('Times', 'B', 12)
+    pdf.cell(page_width, 0.0, 'Shipments Data', align='C')
+    pdf.ln(10)
+
+    pdf.set_font('Courier', '', 7)
+
+    col_width = page_width / 30
+
+    pdf.ln(1)
+
+    th = pdf.font_size
+
+    for row in result:
+        pdf.cell(col_width, th, "ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Weight")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.weight))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Status")
+        pdf.ln(th)
+        pdf.cell(col_width * 7, th, str(row.status))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "From Address ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.from_address_id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "To Address ID")
+        pdf.ln(th)
+        pdf.cell(col_width, th, str(row.to_address_id))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Sender")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.sender))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Receiver")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.receiver))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Acceptor")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.acceptor))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "Deliverer")
+        pdf.ln(th)
+        pdf.cell(col_width * 15, th, str(row.deliverer))
+        pdf.ln(th)
+        pdf.cell(col_width, th, "==========================================================================")
+        pdf.ln(th)
+        pdf.ln(th)
+
+
+    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf',
+                    headers={'Content-Disposition': 'attachment;filename=shipments_by_status_report.pdf'})
+
+
+
+
+
 if __name__ == "__main__":
 
     app.run(debug=True)

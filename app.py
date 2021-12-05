@@ -142,8 +142,9 @@ class Shipment(db.Model):
 @app.route('/shipping')
 def shipment():
     all_data = Shipment.query.all()
+    status_list = [ShippingStatus.SHIPPED,ShippingStatus.DELIVERED]
 
-    return render_template("shipping.html", shipments = all_data, offices = Office.query.all())
+    return render_template("shipping.html", shipments = all_data, offices = Office.query.all(), statuses = status_list)
 
 @app.route('/client_shipments/<id>/')
 def client_shipments(id):
@@ -152,39 +153,42 @@ def client_shipments(id):
     shipments_client_data = Shipment.query.filter(or_(client == Shipment.sender,client == Shipment.receiver))
     return render_template("client-shipments.html", shipments_client = shipments_client_data)
 
-@app.route('/shipping/employee/<id>/')
-def shipments_registered_by_employee(id):
-    employee = Employee.query.get(id);
+@app.route('/shipping/employee/', methods=['POST'])
+def shipments_registered_by_employee():
+    employee_id = request.form['id_employee']
+    employee = Employee.query.get(employee_id);
 
     shipments_by_employee= Shipment.query.filter(employee == Shipment.acceptor)
     return render_template("shipping.html", shipments = shipments_by_employee)
 
-@app.route('/shipping/status-shipped/')
-def shipments_status_shipped():
+@app.route('/shipping/status/',methods=['POST'])
+def shipments_status():
+    status_form = request.form['status_filter']
 
-    shipped_shipments= Shipment.query.filter(Shipment.status == ShippingStatus.SHIPPED)
-    return render_template("shipping.html", shipments = shipped_shipments)
-@app.route('/shipping/status-delivered/')
-def shipments_status_delivered():
+    if status_form == str(ShippingStatus.SHIPPED):
+        status = ShippingStatus.SHIPPED
+    else:
+        status = ShippingStatus.DELIVERED
 
-    shipped_shipments= Shipment.query.filter(Shipment.status == ShippingStatus.DELIVERED)
-    return render_template("shipping.html", shipments = shipped_shipments)
+    status_shipments= Shipment.query.filter(Shipment.status == status )
+    return render_template("shipping.html", shipments = status_shipments)
 
-@app.route('/shipping/sender/<id>/')
-def send_by_client_shipments(id):
-    client = User.query.get(id);
+
+@app.route('/shipping/sender/', methods=['POST'])
+def send_by_client_shipments():
+    sender_id= request.form['id_sender']
+    client = User.query.get(sender_id);
 
     shipments_by_sender= Shipment.query.filter(client == Shipment.sender)
     return render_template("shipping.html", shipments = shipments_by_sender)
 
-@app.route('/shipping/receiver/<id>/')
-def received_by_client_shipments(id):
-    client = User.query.get(id);
+@app.route('/shipping/receiver/', methods=['POST'])
+def received_by_client_shipments():
+    receiver_id = request.form['id_receiver']
+    client = User.query.get(receiver_id);
 
     shipments_by_receiver= Shipment.query.filter(client == Shipment.receiver)
     return render_template("shipping.html", shipments = shipments_by_receiver)
-
-
 
 
 @app.route('/shipping/insert', methods=['POST'])

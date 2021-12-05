@@ -145,6 +145,46 @@ def shipment():
 
     return render_template("shipping.html", shipments = all_data, offices = Office.query.all())
 
+@app.route('/client_shipments/<id>/')
+def client_shipments(id):
+    client = User.query.get(id);
+
+    shipments_client_data = Shipment.query.filter(or_(client == Shipment.sender,client == Shipment.receiver))
+    return render_template("client-shipments.html", shipments_client = shipments_client_data)
+
+@app.route('/shipping/employee/<id>/')
+def shipments_registered_by_employee(id):
+    employee = Employee.query.get(id);
+
+    shipments_by_employee= Shipment.query.filter(employee == Shipment.acceptor)
+    return render_template("shipping.html", shipments = shipments_by_employee)
+
+@app.route('/shipping/status-shipped/')
+def shipments_status_shipped():
+
+    shipped_shipments= Shipment.query.filter(Shipment.status == ShippingStatus.SHIPPED)
+    return render_template("shipping.html", shipments = shipped_shipments)
+@app.route('/shipping/status-delivered/')
+def shipments_status_delivered():
+
+    shipped_shipments= Shipment.query.filter(Shipment.status == ShippingStatus.DELIVERED)
+    return render_template("shipping.html", shipments = shipped_shipments)
+
+@app.route('/shipping/sender/<id>/')
+def send_by_client_shipments(id):
+    client = User.query.get(id);
+
+    shipments_by_sender= Shipment.query.filter(client == Shipment.sender)
+    return render_template("shipping.html", shipments = shipments_by_sender)
+
+@app.route('/shipping/receiver/<id>/')
+def received_by_client_shipments(id):
+    client = User.query.get(id);
+
+    shipments_by_receiver= Shipment.query.filter(client == Shipment.receiver)
+    return render_template("shipping.html", shipments = shipments_by_receiver)
+
+
 
 
 @app.route('/shipping/insert', methods=['POST'])
@@ -356,6 +396,67 @@ def delete_employee(id):
     flash("Employee Deleted Successfully")
 
     return redirect(url_for('Employees'))
+
+@app.route('/clients')
+def Clients():
+    client_data =User.query.filter(~ exists().where(User.id == Employee.id))
+
+
+    return render_template("clients.html", clients=client_data)
+
+
+@app.route('/client/insert', methods=['POST'])
+def insert_client():
+    if request.method == 'POST':
+        first_name = request.form['firstname']
+        last_name = request.form['lastname']
+        address = request.form['address']
+        email = request.form['email']
+        phone = request.form['phone']
+        password = request.form['password']
+
+
+
+        client_data = User(first_name, last_name, address, phone, email, password)
+        db.session.add(client_data)
+        db.session.commit()
+
+        flash("Client added successfully.")
+
+        return redirect(url_for('Clients'))
+
+
+
+@app.route('/client/update', methods=['GET', 'POST'])
+def update_client():
+    if request.method == 'POST':
+        client_data = User.query.get(request.form.get('id'))
+
+        client_data.first_name = request.form['firstname']
+        client_data.last_name = request.form['lastname']
+        client_data.address = request.form['address']
+        client_data.phone = request.form['phone']
+        client_data.email = request.form['email']
+        client_data.password = request.form['password']
+
+
+        db.session.commit()
+        flash("Client updated successfully.")
+
+        return redirect(url_for('Clients'))
+
+
+@app.route('/client/delete/<id>/', methods=['GET', 'POST'])
+def delete_client(id):
+    client_data = User.query.get(id)
+    db.session.delete(client_data)
+    db.session.commit()
+
+    flash("Client Deleted Successfully")
+
+    return redirect(url_for('Clients'))
+
+
 
 
 if __name__ == "__main__":

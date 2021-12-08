@@ -1,0 +1,56 @@
+ .hero{   
+
+    background-color:$veryLightGrey;
+    @include breakpoint-up(large){
+        
+        display: flex;
+        align-items: center;
+    }
+
+
+
+    &__image{
+        position: relative;
+        background-image: url("/static/images/—Pngtree—delivery\ service\ with\ maps\ on_5367224.png");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        min-height: 15rem;
+
+        @include breakpoint-up(medium){
+            background-size: 50%;
+        }
+
+        @include breakpoint-up(large){
+            flex: 3;
+            order: 2;
+            background-size: 100%;
+            height: 41rem;
+        }
+
+    }
+
+
+    &__text{
+        text-align: center;
+
+        @include breakpoint-up(large){
+            flex: 2;
+            order: 1;
+            text-align: left;
+        }
+
+        
+        h2{
+            font-weight: 300;
+            font-size: 1.875rem;
+            line-height: 1.15;
+            color: $darkBlue;
+        }
+
+        p{
+            line-height: 1;
+        }
+    }
+ }
+

@@ -1,0 +1,33 @@
+.profile{
+    background-color: $veryLightGrey;
+    &__menu{
+        width: 180px;
+        display: flex;
+        flex-direction: column;
+        border-right: 2px solid $darkBlue;
+        
+        
+        a{
+            color: $darkBlue;
+            font-size: 1.5rem;
+            transition: color 150ms ease-in-out;
+            margin-left: 1rem;
+            &:not(:last-child){
+                margin-bottom: 2.5rem;
+            }
+            &:last-child{
+                margin-bottom: 8.75rem;
+            }
+            &:first-child{
+                margin-top: 2.5rem;
+            }
+
+            
+
+            &:hover{
+                color:$limeGreen;
+            }
+        }
+    }
+
+}

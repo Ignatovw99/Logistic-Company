@@ -319,7 +319,7 @@ h2 {
 
 .hero__image {
   position: relative;
-  background-image: url("/app/templates/images/—Pngtree—delivery service with maps on_5367224.png");
+  background-image: url("/static/images/—Pngtree—delivery service with maps on_5367224.png");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -391,7 +391,7 @@ h2 {
   .footer {
     display: -ms-grid;
     display: grid;
-    -ms-grid-columns: (1fr)2;
+    -ms-grid-columns: (1fr)[2];
         grid-template-columns: repeat(2, 1fr);
     -ms-grid-rows: 1fr auto;
         grid-template-rows: 1fr auto;
@@ -506,6 +506,7 @@ h2 {
 }
 
 .profile__menu {
+  width: 180px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -513,6 +514,7 @@ h2 {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
+  border-right: 2px solid #2d314d;
 }
 
 .profile__menu a {
@@ -520,6 +522,7 @@ h2 {
   font-size: 1.5rem;
   -webkit-transition: color 150ms ease-in-out;
   transition: color 150ms ease-in-out;
+  margin-left: 1rem;
 }
 
 .profile__menu a:not(:last-child) {
@@ -530,8 +533,11 @@ h2 {
   margin-bottom: 8.75rem;
 }
 
+.profile__menu a:first-child {
+  margin-top: 2.5rem;
+}
+
 .profile__menu a:hover {
   color: #31d35c;
 }
 /*# sourceMappingURL=style.css.map */
-

@@ -44,8 +44,12 @@
 
                 {% endif %}
                 {% endwith %}
-		    
-		 <form action="{{url_for('send_by_client_shipments')}}" method="POST">
+            <form action="{{url_for('shipment_by_id')}}" method="POST">
+                 Filter by shipment's id:<input type="number"  name="id_shipment" value="">
+                  <button class="btn btn-primary" type="submit">Filter</button>
+              </form>
+
+              <form action="{{url_for('send_by_client_shipments')}}" method="POST">
                 Filter by sender id:<input type="number"  name="id_sender" value={{ id }}>
                   <button class="btn btn-primary" type="submit">Filter</button>
               </form>
@@ -58,7 +62,7 @@
                   <button class="btn btn-primary" type="submit">Filter</button>
               </form>
             <form action="{{url_for('shipments_status')}}" method="POST">
-                Filter by status:<select  name="status_filter" value="">
+                Filter by status:<select  name="status_filter" value=" ">
                          {% for row in statuses %}
                         <option value={{row}}> {{row}}</option>
                         {% endfor %}
@@ -66,6 +70,9 @@
                     </select>
                   <button class="btn btn-primary" type="submit">Filter</button>
               </form>
+
+
+
 
 
 
@@ -82,6 +89,8 @@
                         <th>Receiver</th>
                         <th>Acceptor</th>
                         <th>Deliverer</th>
+                        <th>Price</th>
+{#                        <th>Date</th>#}
                         <th>Action</th>
 
                     </tr>
@@ -100,6 +109,8 @@
                         <td>{{row.receiver}}</td>
                         <td>{{row.acceptor}}</td>
                         <td>{{row.deliverer}}</td>
+{#                        <td>{{ row.date }}</td>#}
+                        <td>{{row.price}}</td>
 
 
                         <td>
@@ -112,7 +123,10 @@
                     </tr>
 
 
-                  <!-- Modal Edit Employee-->
+
+
+
+
 <div id="modaledit{{row.id}}" class="modal fade" role="dialog">
    <div class="modal-dialog">
 
@@ -139,7 +153,7 @@
 
                   <label>Weight:</label>
                    <input type="hidden"  name="id" value="{{row.id}}">
-                  <input type="number" class="form-control" name="weight" value="{{row.weight}}">
+                  <input type="number" class="form-control" name="weight" id="weightUpdate" value="{{row.weight}}">
 
                </div>
 
@@ -151,6 +165,8 @@
 
                         <option value='1'> SHIPPED</option>
                         <option value='2'> DELIVERED</option>
+                        <option value='3'> WAITING</option>
+                        <option value='4'> ACCEPTED</option>
 
 
                     </select>
@@ -161,32 +177,15 @@
 
                   <label>From:</label>
 
-                <input type="radio" id="from_office" name="optionsFrom" value="office" onClick="javascript:return checkedFunction('from_office')" checked>
-                          <label for="from_office">Office</label>
-                  <input type="radio" id="from_address" name="optionsFrom" value="address" onClick="javascript:return checkedFunction('from_address')" checked>
-                          <label for="from_address">Address</label>
+                <input type="radio" id="from_office_update" name="optionsFrom" value="office" onClick="javascript:return checkedFunctionUpdate('from_office_update')" checked>
+                          <label for="from_office_update">Office</label>
+                  <input type="radio" id="from_address_update" name="optionsFrom" value="address" onClick="javascript:return checkedFunctionUpdate('from_address_update')" checked>
+                          <label for="from_address_update">Address</label>
 
-                  <script type="text/javascript">
-                           function checkedFunction(radio_id)
-                            {
-                              if(radio_id == "from_office")
-                              {
-   	                              document.getElementById('select_from_office').style.display = 'block';
-                                  document.getElementById('from_address_text').style.display = 'none';
 
-                               }
-                               else if(radio_id == "from_address")
-                              {
-	                              document.getElementById('select_from_office').style.display = 'none';
-	                              document.getElementById('from_address_text').style.display = '';
-                              }
 
-                              }
-
-                    </script>
-
-                    <input id="from_address_text" type="text" class="form-control" name="fromAddressText" value="{{ row.from_address_id }}" >
-                <div id="select_from_office" style = "display:none" >
+                    <input id="from_address_text_update" type="text" class="form-control" name="fromAddressText" value="{{ row.from_address_id }}" >
+                <div id="select_from_office_update" style = "display:none" >
                     <select  name="selectFromOffice" value="{{ row.from_address_id }}">
                          {% for row in offices %}
                         <option value={{row.id}}> {{row.id}}, {{row.address}} </option>
@@ -205,34 +204,17 @@
 
                   <label>To:</label>
 
-                    <input type="radio" id="to_office" name="optionsTo" value="office" onClick="javascript:return checkedToFunction('to_office')" checked>
-                          <label for="from_office">Office</label>
-                  <input type="radio" id="to_address" name="optionsTo" value="address" onClick="javascript:return checkedToFunction('to_address')" checked>
-                          <label for="from_address">Address</label>
+                    <input type="radio" id="to_office_update" name="optionsTo" value="office" onClick="javascript:return checkedToFunctionUpdate('to_office_update')" checked>
+                          <label for="from_office_update">Office</label>
+                  <input type="radio" id="to_address_update" name="optionsTo" value="address" onClick="javascript:return checkedToFunctionUpdate('to_address_update')" checked>
+                          <label for="from_address_update">Address</label>
 
 
-                        <script type="text/javascript">
-                           function checkedToFunction(radio_id)
-                            {
-                              if(radio_id == 'to_office')
-                              {
-   	                              document.getElementById('select_to_office').style.display = 'block';
-                                  document.getElementById('to_address_text').style.display = 'none';
 
-                               }
-                               else if(radio_id == 'to_address')
-                              {
-	                              document.getElementById('select_to_office').style.display = 'none';
-	                              document.getElementById('to_address_text').style.display = '';
-                              }
 
-                              }
+                    <input id="to_address_text_update" type="text" class="form-control" name="toAddressText" value="{{ row.to_address_id }}">
 
-                    </script>
-
-                    <input id="to_address_text" type="text" class="form-control" name="toAddressText" value="{{ row.to_address_id }}">
-
-                    <div id="select_to_office" style = "display:none">
+                    <div id="select_to_office_update" style = "display:none">
                     <select  name="selectToOffice" value = "{{ row.to_address_id }}">
                          {% for row in offices %}
                         <option value={{row.id}}> {{row.id}}, {{row.address}} </option>
@@ -247,25 +229,58 @@
                </div>
 
 
-               <div class="form-group">
-
-
-                  <label>Sender:</label>
-
-                  <input type="number" class="form-control" name="sender" value="{{row.sender.id}}">
-
-
-               </div>
-
                 <div class="form-group">
 
 
-                  <label>Receiver:</label>
-
-                  <input type="number" class="form-control" name="receiver" value="{{row.receiver.id}}">
+                  <label>Sender</label>
+                  <label> First name:</label>
+                  <input type="text" class="form-control" name="senderFirstName" value="{{row.sender.first_name}}">
 
 
                </div>
+            <div class="form-group">
+
+
+
+                  <label>Last name:</label>
+                  <input type="text" class="form-control" name="senderLastName" value="{{row.sender.last_name}}">
+
+
+               </div>
+            <div class="form-group">
+
+                  <label>Phone number:</label>
+                  <input type="number" class="form-control" name="senderPhoneNumber" value="{{row.sender.phone_number}}">
+
+
+               </div>
+
+                 <div class="form-group">
+
+
+                  <label>Receiver</label>
+                  <label> First name:</label>
+                  <input type="text" class="form-control" name="receiverFirstName" value="{{row.receiver.first_name}}">
+
+
+               </div>
+            <div class="form-group">
+
+
+
+                  <label>Last name:</label>
+                  <input type="text" class="form-control" name="receiverLastName" value="{{row.receiver.last_name}}">
+
+
+               </div>
+            <div class="form-group">
+
+                  <label>Phone number:</label>
+                  <input type="number" class="form-control" name="receiverPhoneNumber" value="{{row.receiver.phone_number}}">
+
+
+               </div>
+
 
 
 
@@ -288,6 +303,17 @@
 
 
                </div>
+
+            <div class="form-group">
+
+
+
+
+                   <label>Price:</label>
+                   <input type="text" id="priceUpdate" style="border:none; width: fit-content;" id="priceUpdate" name="price"  value="{{ row.price }}" readonly><label>lv.</label>
+               </div>
+
+
 
 
 
@@ -332,6 +358,55 @@
             </div>
 
 
+        <script type="text/javascript">
+                           function checkedFunctionUpdate(radio_id)
+                            {
+                              if(radio_id == "from_office_update")
+                              {
+   	                              document.getElementById('select_from_office_update').style.display = 'block';
+                                  document.getElementById('from_address_text_update').style.display = 'none';
+
+                               }
+                               else if(radio_id == "from_address_update")
+                              {
+	                              document.getElementById('select_from_office_update').style.display = 'none';
+	                              document.getElementById('from_address_text_update').style.display = '';
+                              }
+
+                              }
+
+                               document.getElementById("weightUpdate").addEventListener("keyup", calculatePriceUpdate);
+                           function calculatePriceUpdate()
+                            {
+                                let weight = document.getElementById('weightUpdate').value ;
+                                if(weight>5){
+                                    document.getElementById('priceUpdate').value = 5.00;
+                                }
+                                else{
+                                document.getElementById('priceUpdate').value = 2.50 ;}
+
+
+
+                              }
+
+                              function checkedToFunctionUpdate(radio_id)
+                            {
+                              if(radio_id == 'to_office_update')
+                              {
+   	                              document.getElementById('select_to_office_update').style.display = 'block';
+                                  document.getElementById('to_address_text_update').style.display = 'none';
+
+                               }
+                               else if(radio_id == 'to_address_update')
+                              {
+	                              document.getElementById('select_to_office_update').style.display = 'none';
+	                              document.getElementById('to_address_text_update').style.display = '';
+                              }
+
+                              }
+
+                    </script>
+
 
 
 
@@ -351,7 +426,7 @@
                <div class="form-group">
 
                   <label>Weight:</label>
-                  <input type="number" class="form-control" name="weight" required="1">
+                  <input type="number" class="form-control" name="weight" id="weight" onkeyup="calculatePrice()" required="1">
 
 
                </div>
@@ -361,8 +436,10 @@
                   <label>Status</label>
                   <select  name="status" required="1">
 
-                        <option value=1> SHIPPED </option>
-                        <option value=2> DELIVERED</option>
+                        <option value='1'> SHIPPED </option>
+                        <option value='2'> DELIVERED</option>
+                        <option value='3'> WAITING</option>
+                        <option value='4'> ACCEPTED</option>
 
                     </select>
 
@@ -371,29 +448,14 @@
                 <div class="form-group">
 
                   <label>From:</label>
+
+
                   <input type="radio" id="from_office" name="optionsFrom" value="office" onClick="javascript:return checkedFunction('from_office')" checked>
                           <label for="from_office">Office</label>
                   <input type="radio" id="from_address" name="optionsFrom" value="address" onClick="javascript:return checkedFunction('from_address')" checked>
                           <label for="from_address">Address</label>
 
-                  <script type="text/javascript">
-                           function checkedFunction(radio_id)
-                            {
-                              if(radio_id == "from_office")
-                              {
-   	                              document.getElementById('select_from_office').style.display = 'block';
-                                  document.getElementById('from_address_text').style.display = 'none';
 
-                               }
-                               else if(radio_id == "from_address")
-                              {
-	                              document.getElementById('select_from_office').style.display = 'none';
-	                              document.getElementById('from_address_text').style.display = '';
-                              }
-
-                              }
-
-                    </script>
 
                     <input id="from_address_text" type="text" class="form-control" name="fromAddressText"  value="city, complex,street"
                            onfocus="(this.value == 'city, complex,street') && (this.value = '')"
@@ -417,44 +479,28 @@
                </div>
 
 
+
+
                 <div class="form-group">
 
 
                   <label>To:</label>
-                  <input type="radio" id="to_office" name="optionsTo" value="office" onClick="javascript:return checkedToFunction('to_office')" checked>
+                  <input type="radio" id="to_office" name="optionsTo" value="office" onClick="javascript:return checkedToFunction('to_office')"  checked >
                           <label for="from_office">Office</label>
-                  <input type="radio" id="to_address" name="optionsTo" value="address" onClick="javascript:return checkedToFunction('to_address')" checked>
+                  <input type="radio" id="to_address" name="optionsTo" value="address" onClick="javascript:return checkedToFunction('to_address')"  checked>
                           <label for="from_address">Address</label>
 
 
-                        <script type="text/javascript">
-                           function checkedToFunction(radio_id)
-                            {
-                              if(radio_id == 'to_office')
-                              {
-   	                              document.getElementById('select_to_office').style.display = 'block';
-                                  document.getElementById('to_address_text').style.display = 'none';
-
-                               }
-                               else if(radio_id == 'to_address')
-                              {
-	                              document.getElementById('select_to_office').style.display = 'none';
-	                              document.getElementById('to_address_text').style.display = '';
-                              }
-
-                              }
-
-                    </script>
 
                     <input id="to_address_text" type="text" class="form-control" name="toAddressText" value="city, complex,street"
                            onfocus="(this.value == 'city, complex,street') && (this.value = '')"
                            onblur="(this.value == '') && (this.value = 'city, complex,street')"
-                           required="1">
+                           required="1" >
 
-                    <div id="select_to_office" style = "display:none">
-                    <select  name="selectToOffice" required = "1">
+                    <div id="select_to_office" style = "display:none" >
+                    <select  name="selectToOffice" required = "1" >
                          {% for row in offices %}
-                        <option value={{row.id}}> {{row.id}}, {{row.address}} </option>
+                        <option value={{row.id}} > {{row.id}}, {{row.address}} </option>
                         {% endfor %}
 
                     </select>
@@ -470,17 +516,51 @@
                 <div class="form-group">
 
 
-                  <label>Sender:</label>
-                  <input type="number" class="form-control" name="sender" required="1">
+                  <label>Sender</label>
+                  <label> First name:</label>
+                  <input type="text" class="form-control" name="senderFirstName" required="1">
+
+
+               </div>
+            <div class="form-group">
+
+
+
+                  <label>Last name:</label>
+                  <input type="text" class="form-control" name="senderLastName" required="1">
+
+
+               </div>
+            <div class="form-group">
+
+                  <label>Phone number:</label>
+                  <input type="number" class="form-control" name="senderPhoneNumber" required="1">
 
 
                </div>
 
-                <div class="form-group">
+                 <div class="form-group">
 
 
                   <label>Receiver</label>
-                  <input type="number" class="form-control" name="receiver" required="1">
+                  <label> First name:</label>
+                  <input type="text" class="form-control" name="receiverFirstName" required="1">
+
+
+               </div>
+            <div class="form-group">
+
+
+
+                  <label>Last name:</label>
+                  <input type="text" class="form-control" name="receiverLastName" required="1">
+
+
+               </div>
+            <div class="form-group">
+
+                  <label>Phone number:</label>
+                  <input type="number" class="form-control" name="receiverPhoneNumber" required="1">
 
 
                </div>
@@ -500,6 +580,12 @@
 
                </div>
 
+
+               <div class="form-group">
+
+                   <label>Price:</label>
+                   <input type="text" style="border:none; " id="price" name="price" value="0.00" required="1" readonly><label>lv.</label>
+               </div>
 
 
                <div class="form-group">
@@ -534,6 +620,58 @@
 
 </div>
 
+
+        <script type="text/javascript">
+                           function checkedFunction(radio_id)
+                            {  console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                              if(radio_id == "from_office")
+                              {
+   	                              document.getElementById('select_from_office').style.display = 'block';
+                                  document.getElementById('from_address_text').style.display = 'none';
+
+                               }
+                               else if(radio_id == "from_address")
+                              {
+	                              document.getElementById('select_from_office').style.display = 'none';
+	                              document.getElementById('from_address_text').style.display = '';
+                              }
+
+                              }
+
+                              function checkedToFunction(radio_id)
+                            {
+                              if(radio_id == 'to_office')
+                              {
+   	                              document.getElementById('select_to_office').style.display = 'block';
+                                  document.getElementById('to_address_text').style.display = 'none';
+
+                               }
+                               else if(radio_id == 'to_address')
+                              {
+	                              document.getElementById('select_to_office').style.display = 'none';
+	                              document.getElementById('to_address_text').style.display = '';
+                              }
+
+                              }
+
+                               document.getElementById("weight").addEventListener("keyup", calculatePrice);
+                           function calculatePrice()
+                            {
+                                let weight = document.getElementById('weight').value ;
+                                if(weight>5){
+                                    document.getElementById('price').value = 5;
+                                }
+                                else{
+                                document.getElementById('price').value = 2 ;}
+
+
+
+                              }
+
+
+
+
+                    </script>
 
 
 

@@ -1,9 +1,11 @@
+import datetime
 import enum
 
-from flask import Flask, render_template, url_for, request, redirect, flash
+from flask import Flask, render_template, url_for, request, redirect, flash, Response
 from flask_sqlalchemy import SQLAlchemy
 from fpdf import FPDF
-rom sqlalchemy import exists, or_
+
+from sqlalchemy import exists, or_, and_
 from sqlalchemy.orm import relationship, joinedload, session, Load, contains_eager
 
 app = Flask(__name__)
@@ -87,6 +89,8 @@ class Office(db.Model):
 class ShippingStatus(enum.Enum):
     SHIPPED = 1
     DELIVERED = 2
+    WAITING = 3
+    ACCEPTED = 4
 
 
 class ShippingAddress(db.Model):
@@ -117,6 +121,8 @@ class Shipment(db.Model):
     receiver_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     acceptor_id = db.Column(db.Integer, db.ForeignKey("employees.id"))
     deliverer_id = db.Column(db.Integer, db.ForeignKey("employees.id"))
+    price = db.Column(db.Float);
+    # date = db.Column(db.DateTime, default=datetime.datetime.utcnow);
 
     from_address = db.relationship(ShippingAddress, foreign_keys=from_address_id, uselist=False, lazy="select")
     to_address = db.relationship(ShippingAddress, foreign_keys=to_address_id, uselist=False, lazy="select")
@@ -125,7 +131,7 @@ class Shipment(db.Model):
     acceptor = db.relationship(Employee, foreign_keys=acceptor_id, lazy="select")
     deliverer = db.relationship(Employee, foreign_keys=deliverer_id, lazy="select")
 
-    def __init__(self, weight,status, from_address,to_address, sender,receiver, acceptor, deliverer):
+    def __init__(self, weight, from_address,to_address, sender,receiver,price, acceptor, deliverer,status):
         self.weight = weight
         self.status = status
         self.from_address = from_address
@@ -134,24 +140,185 @@ class Shipment(db.Model):
         self.receiver = receiver
         self.acceptor = acceptor
         self.deliverer = deliverer
+        self.price = price
+
+
+
+
 
     def __repr__(self):
         return f"Shipment(weight={self.weight}, status={self.status})"
+
+@app.route('/client_shipments/')
+def ClientShipments():
+    client = User.query.get(1);
+    office_data = Office.query.all()
+
+    shipments_client_data = Shipment.query.filter(or_(client == Shipment.sender,client == Shipment.receiver))
+    return render_template("client-shipments.html", shipments_client = shipments_client_data, offices = office_data)
+
+@app.route('/client_shipments/insert', methods=['POST'])
+def insert_shipping_clients():
+    if request.method == 'POST':
+        weight = request.form['weight']
+
+
+
+        if request.form['optionsFrom'] == 'address':
+            from_address = request.form['fromAddressText']
+
+        else:
+            from_address = request.form['selectFromOffice']
+
+
+        if request.form['optionsTo'] == 'address':
+            to_address = request.form['toAddressText']
+
+        else:
+            to_address = request.form['selectToOffice']
+
+
+        sender_id = request.form['senderId']
+        receiver_first_name = request.form['receiverFirstName']
+        receiver_last_name = request.form['receiverLastName']
+        receiver_phone_number = request.form['receiverPhoneNumber']
+        price = request.form['price']
+
+
+        shipping_from_address = ShippingAddress(from_address)
+        shipping_to_address = ShippingAddress(to_address)
+        db.session.add(shipping_to_address)
+        db.session.add(shipping_from_address)
+        db.session.commit()
+
+        sender = User.query.filter_by(id=sender_id).first()
+        receiver = User.query.filter(and_(User.first_name == receiver_first_name, User.last_name == receiver_last_name, User.phone_number == receiver_phone_number)).first()
+        acceptor = Employee.query.filter_by(id=3).first()
+        deliverer = Employee.query.filter_by(id=4).first()
+        status = ShippingStatus.WAITING
+
+
+
+
+        shipment_data = Shipment(weight,shipping_from_address,shipping_to_address,sender,receiver,price,acceptor,deliverer,status)
+        db.session.add(shipment_data)
+        db.session.commit()
+
+        flash("Shipment Inserted Successfully")
+
+        return redirect(url_for('ClientShipments'))
+
+
+@app.route('/client_shipments/update', methods=['GET', 'POST'])
+def update_shipping_clients():
+    if request.method == 'POST':
+        shipping_data = Shipment.query.get(request.form.get('id'))
+        shipping_data.weight = request.form['weight']
+
+
+        if request.form['optionsFrom'] == 'address':
+            shipping_data.from_address = ShippingAddress.query.get(request.form['fromAddressText'])
+        else:
+            shipping_data.from_address =ShippingAddress.query.get(request.form['selectFromOffice'])
+
+        if request.form['optionsTo'] == 'address':
+            shipping_data.to_address = ShippingAddress.query.get(request.form['toAddressText'])
+        else:
+            shipping_data.to_address = ShippingAddress.query.get(request.form['selectToOffice'])
+
+
+        shipping_data.sender = User.query.get(request.form['senderId'])
+        shipping_data.receiver = User.query.filter(and_(User.first_name == request.form['receiverFirstName'], User.last_name == request.form['receiverLastName'], User.phone_number == request.form['receiverPhoneNumber'])).first()
+        shipping_data.price = request.form['price']
+
+        db.session.commit()
+        flash("Shipment Updated Successfully")
+
+        return redirect(url_for('ClientShipments'))
+
+@app.route('/client_shipments/delete/<id>/', methods=['GET', 'POST'])
+def delete_shipping_clients(id):
+    shipping_data = Shipment.query.get(id)
+
+    db.session.delete(shipping_data)
+    db.session.commit()
+    flash("Shipment Deleted Successfully")
+
+    return redirect(url_for('ClientShipments'))
+
+
+@app.route('/clients')
+def Clients():
+    client_data =User.query.filter(~ exists().where(User.id == Employee.id))
+
+
+    return render_template("clients.html", clients=client_data)
+
+
+@app.route('/client/insert', methods=['POST'])
+def insert_client():
+    if request.method == 'POST':
+        first_name = request.form['firstname']
+        last_name = request.form['lastname']
+        address = request.form['address']
+        email = request.form['email']
+        phone = request.form['phone']
+        password = request.form['password']
+
+
+
+        client_data = User(first_name, last_name, address, phone, email, password)
+        db.session.add(client_data)
+        db.session.commit()
+
+        flash("Client added successfully.")
+
+        return redirect(url_for('Clients'))
+
+
+
+@app.route('/client/update', methods=['GET', 'POST'])
+def update_client():
+    if request.method == 'POST':
+        client_data = User.query.get(request.form.get('id'))
+
+        client_data.first_name = request.form['firstname']
+        client_data.last_name = request.form['lastname']
+        client_data.address = request.form['address']
+        client_data.phone_number = request.form['phone']
+        client_data.email = request.form['email']
+        client_data.password = request.form['password']
+
+
+        db.session.commit()
+        flash("Client updated successfully.")
+
+        return redirect(url_for('Clients'))
+
+
+@app.route('/client/delete/<id>/', methods=['GET', 'POST'])
+def delete_client(id):
+    client_data = User.query.get(id)
+    db.session.delete(client_data)
+    db.session.commit()
+
+    flash("Client Deleted Successfully")
+
+    return redirect(url_for('Clients'))
+
+
+
+
 
 
 @app.route('/shipping')
 def shipment():
     all_data = Shipment.query.all()
-    status_list = [ShippingStatus.SHIPPED,ShippingStatus.DELIVERED]
+    status_list = [ShippingStatus.SHIPPED,ShippingStatus.DELIVERED,ShippingStatus.WAITING,ShippingStatus.ACCEPTED]
 
     return render_template("shipping.html", shipments = all_data, offices = Office.query.all(), statuses = status_list)
 
-@app.route('/client_shipments/<id>/')
-def client_shipments(id):
-    client = User.query.get(id);
 
-    shipments_client_data = Shipment.query.filter(or_(client == Shipment.sender,client == Shipment.receiver))
-    return render_template("client-shipments.html", shipments_client = shipments_client_data)
 
 @app.route('/shipping/employee/', methods=['POST'])
 def shipments_registered_by_employee():
@@ -161,23 +328,38 @@ def shipments_registered_by_employee():
     shipments_by_employee= Shipment.query.filter(employee == Shipment.acceptor)
     return render_template("shipping.html", shipments = shipments_by_employee)
 
-@app.route('/shipping/status/',methods=['POST'])
+@app.route('/shipping/status',methods=['POST'])
 def shipments_status():
     status_form = request.form['status_filter']
 
     if status_form == str(ShippingStatus.SHIPPED):
         status = ShippingStatus.SHIPPED
-    else:
+    elif status_form == str(ShippingStatus.DELIVERED):
         status = ShippingStatus.DELIVERED
+    elif status_form == str(ShippingStatus.WAITING):
+        status = ShippingStatus.WAITING
+    else:
+        status = ShippingStatus.ACCEPTED
+
 
     status_shipments= Shipment.query.filter(Shipment.status == status )
     return render_template("shipping.html", shipments = status_shipments)
+
+
+@app.route('/shipping/shipment/', methods=['POST'])
+def shipment_by_id():
+    shipment_id= request.form['id_shipment']
+    shipment = Shipment.query.filter_by(id=shipment_id);
+
+    return render_template("shipping.html", shipments = shipment)
+
 
 
 @app.route('/shipping/sender/', methods=['POST'])
 def send_by_client_shipments():
     sender_id= request.form['id_sender']
     client = User.query.get(sender_id);
+
 
     shipments_by_sender= Shipment.query.filter(client == Shipment.sender)
     return render_template("shipping.html", shipments = shipments_by_sender)
@@ -190,51 +372,60 @@ def received_by_client_shipments():
     shipments_by_receiver= Shipment.query.filter(client == Shipment.receiver)
     return render_template("shipping.html", shipments = shipments_by_receiver)
 
-
 @app.route('/shipping/insert', methods=['POST'])
 def insert_shipping():
     if request.method == 'POST':
         weight = request.form['weight']
         status_value = request.form['status']
 
+
         if request.form['optionsFrom'] == 'address':
             from_address = request.form['fromAddressText']
+
         else:
             from_address = request.form['selectFromOffice']
 
+
         if request.form['optionsTo'] == 'address':
             to_address = request.form['toAddressText']
+
         else:
             to_address = request.form['selectToOffice']
 
-        sender = request.form['sender']
-        receiver = request.form['receiver']
+
+        sender_first_name = request.form['senderFirstName']
+        sender_last_name = request.form['senderLastName']
+        sender_phone_number = request.form['senderPhoneNumber']
+        receiver_first_name = request.form['receiverFirstName']
+        receiver_last_name = request.form['receiverLastName']
+        receiver_phone_number = request.form['receiverPhoneNumber']
         acceptor = request.form['acceptor']
         deliverer = request.form['deliverer']
+        price = request.form['price']
         status = []
 
-        if status_value == 1:
+        if status_value == '1':
             status.append(ShippingStatus.SHIPPED)
-        else:
+        elif status_value == '2':
             status.append(ShippingStatus.DELIVERED)
-
-
-
+        elif status_value == '3':
+            status.append(ShippingStatus.WAITING)
+        else:
+            status.append(ShippingStatus.ACCEPTED)
 
         shipping_from_address = ShippingAddress(from_address)
         shipping_to_address = ShippingAddress(to_address)
         db.session.add(shipping_to_address)
         db.session.add(shipping_from_address)
         db.session.commit()
-        # from_id =ShippingAddress.query.filter_by(address=from_address).first()
-        # to_id =ShippingAddress.query.filter_by(address=to_address).first()
-        sender_id = User.query.filter_by(id=sender).first()
-        receiver_id = User.query.filter_by(id=receiver).first()
+
+        sender_id = User.query.filter(and_(User.first_name == sender_first_name, User.last_name == sender_last_name, User.phone_number == sender_phone_number)).first()
+        receiver_id = User.query.filter(and_(User.first_name == receiver_first_name, User.last_name == receiver_last_name, User.phone_number == receiver_phone_number)).first()
         acceptor_id = Employee.query.filter_by(id=acceptor).first()
         deliverer_id = Employee.query.filter_by(id=deliverer).first()
 
 
-        shipment_data = Shipment(weight,status[0], shipping_from_address, shipping_to_address, sender_id, receiver_id, acceptor_id, deliverer_id)
+        shipment_data = Shipment(weight, shipping_from_address, shipping_to_address, sender_id, receiver_id,price, acceptor_id, deliverer_id,status[0])
         db.session.add(shipment_data)
         db.session.commit()
 
@@ -251,8 +442,14 @@ def update_shipping():
         shipping_data.weight = request.form['weight']
         if request.form['status'] == '1':
             shipping_data.status = ShippingStatus.SHIPPED
-        else:
+        elif request.form['status'] == '2' :
             shipping_data.status = ShippingStatus.DELIVERED
+        elif request.form['status'] == '3' :
+            shipping_data.status = ShippingStatus.WAITING
+        else:
+            shipping_data.status = ShippingStatus.ACCEPTED
+
+
         if request.form['optionsFrom'] == 'address':
             shipping_data.from_address = ShippingAddress.query.get(request.form['fromAddressText'])
         else:
@@ -262,10 +459,14 @@ def update_shipping():
             shipping_data.to_address = ShippingAddress.query.get(request.form['toAddressText'])
         else:
             shipping_data.to_address = ShippingAddress.query.get(request.form['selectToOffice'])
-        shipping_data.sender = User.query.get(request.form['sender'])
-        shipping_data.receiver = User.query.get(request.form['receiver'])
+
+
+        shipping_data.sender = User.query.filter(and_(User.first_name == request.form['senderFirstName'], User.last_name == request.form['senderLastName'], User.phone_number == request.form['senderPhoneNumber'])).first()
+
+        shipping_data.receiver = User.query.filter(and_(User.first_name == request.form['receiverFirstName'], User.last_name == request.form['receiverLastName'], User.phone_number == request.form['receiverPhoneNumber'])).first()
         shipping_data.acceptor = Employee.query.get(request.form['acceptor'])
         shipping_data.deliverer = Employee.query.get(request.form['deliverer'])
+        shipping_data.price = request.form['price']
 
         db.session.commit()
         flash("Shipment Updated Successfully")
@@ -378,7 +579,7 @@ def update_employee():
         employee_data.user.first_name = request.form['firstname']
         employee_data.user.last_name = request.form['lastname']
         employee_data.user.address = request.form['address']
-        employee_data.user.phone = request.form['phone']
+        employee_data.user.phone_number = request.form['phone']
         employee_data.user.email = request.form['email']
         employee_data.user.password = request.form['password']
         employee_data.office_id = request.form['officeid']
@@ -400,65 +601,6 @@ def delete_employee(id):
     flash("Employee Deleted Successfully")
 
     return redirect(url_for('Employees'))
-
-@app.route('/clients')
-def Clients():
-    client_data =User.query.filter(~ exists().where(User.id == Employee.id))
-
-
-    return render_template("clients.html", clients=client_data)
-
-
-@app.route('/client/insert', methods=['POST'])
-def insert_client():
-    if request.method == 'POST':
-        first_name = request.form['firstname']
-        last_name = request.form['lastname']
-        address = request.form['address']
-        email = request.form['email']
-        phone = request.form['phone']
-        password = request.form['password']
-
-
-
-        client_data = User(first_name, last_name, address, phone, email, password)
-        db.session.add(client_data)
-        db.session.commit()
-
-        flash("Client added successfully.")
-
-        return redirect(url_for('Clients'))
-
-
-
-@app.route('/client/update', methods=['GET', 'POST'])
-def update_client():
-    if request.method == 'POST':
-        client_data = User.query.get(request.form.get('id'))
-
-        client_data.first_name = request.form['firstname']
-        client_data.last_name = request.form['lastname']
-        client_data.address = request.form['address']
-        client_data.phone = request.form['phone']
-        client_data.email = request.form['email']
-        client_data.password = request.form['password']
-
-
-        db.session.commit()
-        flash("Client updated successfully.")
-
-        return redirect(url_for('Clients'))
-
-
-@app.route('/client/delete/<id>/', methods=['GET', 'POST'])
-def delete_client(id):
-    client_data = User.query.get(id)
-    db.session.delete(client_data)
-    db.session.commit()
-
-    flash("Client Deleted Successfully")
-
-    return redirect(url_for('Clients'))
 
 
 
@@ -787,7 +929,7 @@ def download_report_shipments_by_sender():
 
 @app.route('/download/report/', methods=['GET', 'POST'])
 def download_report():
-    status_list = [ShippingStatus.SHIPPED, ShippingStatus.DELIVERED]
+    status_list = [ShippingStatus.SHIPPED, ShippingStatus.DELIVERED, ShippingStatus.WAITING, ShippingStatus.ACCEPTED]
     return render_template("download.html",statuses = status_list)
 
 
@@ -861,14 +1003,18 @@ def download_report_shipments_by_receiver():
                     headers={'Content-Disposition': 'attachment;filename=shipments_by_receiver_report.pdf'})
 
 
-@app.route('/download/report/shipments-by-status/pdf' ,methods=['GET', 'POST'])
+@app.route('/download/report/shipments-by-status/pdf', methods=['GET', 'POST'])
 def download_report_shipments_by_status():
     status_form = request.form['status_filter']
 
     if status_form == str(ShippingStatus.SHIPPED):
         status = ShippingStatus.SHIPPED
-    else:
+    elif status_form == str(ShippingStatus.DELIVERED):
         status = ShippingStatus.DELIVERED
+    elif status_form == str(ShippingStatus.WAITING):
+        status = ShippingStatus.WAITING
+    else:
+        status = ShippingStatus.ACCEPTED
 
     result = Shipment.query.filter(Shipment.status == status)
     pdf = FPDF()
@@ -934,9 +1080,8 @@ def download_report_shipments_by_status():
                     headers={'Content-Disposition': 'attachment;filename=shipments_by_status_report.pdf'})
 
 
-
-
-
 if __name__ == "__main__":
 
     app.run(debug=True)
+
+

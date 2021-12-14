@@ -17,6 +17,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     
     remember_hashes = db.relationship("Remember", backref="user", lazy="dynamic", cascade="all, delete-orphan")
+    roles = db.relationship("UserRole", backref="user", lazy="joined", cascade="all, delete-orphan")
 
     @property
     def password(self):
@@ -35,6 +36,10 @@ class User(db.Model):
     def is_anonymous(self):
         return not self.is_authenticated()
 
+    def has_role(self, role):
+        user_roles = [user_role.role for user_role in self.roles]
+        return role in user_roles
+
     def create_remember_token(self):
         remember = Remember(self.id)
         db.session.add(remember)
@@ -50,6 +55,22 @@ class User(db.Model):
 
     def __repr__(self):
         return f"User(first_name={self.first_name}, last_name={self.last_name})"
+
+
+class Role(enum.Enum):
+    SYSTEM_ADMIN = 1
+    CLIENT = 2
+    EMPLOYEE = 3
+
+
+class UserRole(db.Model):
+    __tablename__ = "users_roles"
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True, autoincrement=False)
+    role = db.Column(db.Enum(Role), primary_key=True, autoincrement=False)
+    
+    def __repr__(self):
+        return f"UserRole(user={self.user}, role={self.role})"
 
 
 class Remember(db.Model):

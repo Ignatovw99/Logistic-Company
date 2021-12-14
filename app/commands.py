@@ -32,7 +32,16 @@ def seed_database():
 
         db.session.commit()
         return users
-    
+
+
+    def generate_roles(users):
+        roles = [role for role in models.Role if role != models.Role.SYSTEM_ADMIN]
+        for i, user in enumerate(users):
+            user_role = models.UserRole(user=user, role=roles[i % len(roles)])
+            db.session.add(user_role)
+        
+        db.session.commit()
+
     
     def generate_remember_hashes(users):
         for x in range(5):
@@ -100,6 +109,7 @@ def seed_database():
 
 
     users = generate_users()
+    generate_roles(users)
     generate_remember_hashes(users)
     offices = generate_offices()
     employees = generate_employees(users, offices)

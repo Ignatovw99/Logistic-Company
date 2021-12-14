@@ -1,7 +1,7 @@
 from flask import session, g, request, current_app as app, flash, redirect, url_for
 from werkzeug.local import LocalProxy
 from app import db
-from app.models import User, Remember
+from app.models import Role, User, Remember
 from itsdangerous.url_safe import URLSafeSerializer
 from functools import wraps
 
@@ -56,6 +56,14 @@ def inject_current_user():
     return dict(current_user=current_user)
 
 
+@app.context_processor
+def inject_roles():
+    """
+    Inject all available roles as a variable into the context of the application templates
+    """
+    return dict(Role=Role)
+
+
 def encrypt_cookie(cookie_content):
     serializer = URLSafeSerializer(app.config["SECRET_KEY"], salt="cookie")
     encrypted_cookie_content = serializer.dumps(cookie_content)
@@ -91,3 +99,16 @@ def login_required(view_func):
         return view_func(*args, **kwargs)
 
     return handle_login_requirement
+
+
+def role_required(role):
+    def role_required_wrapper(view_func):
+        @wraps(view_func)
+        def hanlde_role_requirement(*args, **kwargs):
+            if not current_user.has_role(role):
+                flash("You are not authorized to access this page", "danger")
+                return redirect(url_for("index"))
+            return view_func(*args, **kwargs)
+        return hanlde_role_requirement
+        
+    return role_required_wrapper

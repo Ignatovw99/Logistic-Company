@@ -218,12 +218,29 @@
                 <div class="form-group">
 
 
-                  <label>Sender id:</label>
-
-                  <input type="number" class="form-control" name="senderId" value="{{row.sender.id}}">
+                  <label>Sender</label>
+                  <label> First name:</label>
+                  <input type="text" class="form-control" name="senderFirstName" value="{{row.sender.first_name}}">
 
 
                </div>
+            <div class="form-group">
+
+
+
+                  <label>Last name:</label>
+                  <input type="text" class="form-control" name="senderLastName" value="{{row.sender.last_name}}">
+
+
+               </div>
+            <div class="form-group">
+
+                  <label>Phone number:</label>
+                  <input type="number" class="form-control" name="senderPhoneNumber" value="{{row.sender.phone_number}}">
+
+
+               </div>
+
 
                  <div class="form-group">
 
@@ -371,7 +388,7 @@
          </div>
          <div class="modal-body">
 
-            <form action="/client_shipments/insert" method="POST">
+            <form action="/client_shipments/insert" method='POST'>
 
 
                <div class="form-group">
@@ -451,15 +468,32 @@
                </div>
 
 
-                <div class="form-group">
+             <div class="form-group">
 
 
-                  <label>Sender id:</label>
-
-                  <input type="number" class="form-control" name="senderId" required="1">
+                  <label>Sender</label>
+                  <label> First name:</label>
+                  <input type="text" class="form-control" name="senderFirstName" required="1">
 
 
                </div>
+            <div class="form-group">
+
+
+
+                  <label>Last name:</label>
+                  <input type="text" class="form-control" name="senderLastName" required="1">
+
+
+               </div>
+            <div class="form-group">
+
+                  <label>Phone number:</label>
+                  <input type="number" class="form-control" name="senderPhoneNumber" required="1">
+
+
+               </div>
+
 
 
                  <div class="form-group">
@@ -533,7 +567,7 @@
 
         <script type="text/javascript">
                            function checkedFunction(radio_id)
-                            {  
+                            {  console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                               if(radio_id == "from_office")
                               {
    	                              document.getElementById('select_from_office').style.display = 'block';

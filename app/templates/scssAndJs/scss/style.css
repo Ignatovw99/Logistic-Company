@@ -501,6 +501,9 @@ h2 {
 }
 
 .profile {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   background-color: #f4f4f4;
 }
 
@@ -538,5 +541,19 @@ h2 {
 
 .profile__menu a:hover {
   color: #31d35c;
+}
+
+.profile__table {
+  -webkit-box-flex: 2;
+      -ms-flex-positive: 2;
+          flex-grow: 2;
+  background: white;
+  height: 300px;
+  margin: 60px 60px 60px 60px;
+}
+
+.profile__table th {
+  text-align: left;
+  text-transform: uppercase;
 }
 /*# sourceMappingURL=style.css.map */

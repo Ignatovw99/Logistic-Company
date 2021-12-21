@@ -547,13 +547,45 @@ h2 {
   -webkit-box-flex: 2;
       -ms-flex-positive: 2;
           flex-grow: 2;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.profile__table tbody {
   background: white;
-  height: 300px;
-  margin: 60px 60px 60px 60px;
+  border-collapse: collapse;
+  -webkit-box-shadow: 0 5px 10px #2d314d;
+          box-shadow: 0 5px 10px #2d314d;
+}
+
+.profile__table .tbhead {
+  -webkit-box-shadow: 0 5px 10px #2d314d;
+          box-shadow: 0 5px 10px #2d314d;
 }
 
 .profile__table th {
-  text-align: left;
+  padding: 1rem 2rem;
   text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 0.9rem;
+}
+
+.profile__table td {
+  padding: 1rem 2rem;
+}
+
+.profile__table tr:nth-child(odd) {
+  background-color: #9698a6;
+}
+
+.profile__table tr:first-child {
+  background-color: white;
 }
 /*# sourceMappingURL=style.css.map */

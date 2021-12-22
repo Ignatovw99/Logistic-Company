@@ -124,6 +124,8 @@ class Office(db.Model):
 class ShippingStatus(enum.Enum):
     SHIPPED = 1
     DELIVERED = 2
+    WAITING = 3
+    ACCEPTED = 4
 
 
 class ShippingAddress(db.Model):

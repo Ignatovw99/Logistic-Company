@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div style="margin: 10px 0 0 10px;width: 600px">
+    <h2>Download reports</h2>
+  <a href="{{ url_for('download_report_employees') }}">Employees report</a>
+      <a href="{{ url_for('download_report_clients') }}">Clients report</a>
+      <a href="{{ url_for('download_report_shipments') }}">Shipments report</a>
+     <form action="{{url_for('download_report_shipments_by_sender')}}" method="POST">
+                Filter by sender id:<input type="number"  name="id_sender" value={{ id }}>
+                  <button class="btn btn-primary" type="submit">Report</button>
+              </form>
+            <form action="{{url_for('download_report_shipments_by_receiver')}}" method="POST">
+                Filter by receiver id:<input type="number"  name="id_receiver" value="">
+                  <button class="btn btn-primary" type="submit">Report</button>
+              </form>
+            <form action="{{url_for('download_report_shipments_by_employee')}}" method="POST">
+                 Filter by employee's id:<input type="number"  name="id_employee" value="">
+                  <button class="btn btn-primary" type="submit">Report</button>
+              </form>
+            <form action="{{url_for('download_report_shipments_by_status')}}" method="POST">
+                Filter by status:<select  name="status_filter" value="">
+                         {% for status in statuses %}
+                        <option value={{status}}> {{status}}</option>
+                        {% endfor %}
+
+                    </select>
+                  <button class="btn btn-primary" type="submit">Report</button>
+              </form>
+
+    </div>
+</body>
+</html>

@@ -7,6 +7,15 @@ from sqlalchemy import exists, or_, and_
 
 from fpdf import FPDF
 
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
+
 @app.route('/client_shipments/')
 def ClientShipments():
     client = User.query.get(1);

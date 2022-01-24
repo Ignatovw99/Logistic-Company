@@ -1,10 +1,14 @@
 .profile{
+    display: flex;
     background-color: $veryLightGrey;
+    
+
     &__menu{
         width: 180px;
         display: flex;
         flex-direction: column;
         border-right: 2px solid $darkBlue;
+        
         
         
         a{
@@ -26,6 +30,46 @@
 
             &:hover{
                 color:$limeGreen;
+            }
+        }
+    }
+
+    &__table{
+        
+        flex-grow: 2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+       
+        tbody{
+            background: $white;
+            border-collapse: collapse;
+            box-shadow: 0 5px 10px $darkBlue;
+            
+        }
+        .tbhead{
+            box-shadow: 0 5px 10px $darkBlue;
+        }
+       
+        th{
+            padding: 1rem 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            font-size: 0.9rem;
+            
+        }
+
+        td{
+            padding: 1rem 2rem;
+        }
+
+        tr{
+            &:nth-child(odd){
+                background-color: $grayishBlue;
+            }
+
+            &:first-child{
+                background-color: $white;
             }
         }
     }

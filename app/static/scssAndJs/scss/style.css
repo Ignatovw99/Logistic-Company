@@ -395,8 +395,7 @@ h2 {
         grid-template-columns: repeat(2, 1fr);
     -ms-grid-rows: 1fr auto;
         grid-template-rows: 1fr auto;
-        grid-template-areas: "logo links cta"
- "social links copyright";
+        grid-template-areas: "logo links cta" "social links copyright";
     justify-items: start;
   }
 }
@@ -502,6 +501,9 @@ h2 {
 }
 
 .profile {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   background-color: #f4f4f4;
 }
 
@@ -539,5 +541,51 @@ h2 {
 
 .profile__menu a:hover {
   color: #31d35c;
+}
+
+.profile__table {
+  -webkit-box-flex: 2;
+      -ms-flex-positive: 2;
+          flex-grow: 2;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.profile__table tbody {
+  background: white;
+  border-collapse: collapse;
+  -webkit-box-shadow: 0 5px 10px #2d314d;
+          box-shadow: 0 5px 10px #2d314d;
+}
+
+.profile__table .tbhead {
+  -webkit-box-shadow: 0 5px 10px #2d314d;
+          box-shadow: 0 5px 10px #2d314d;
+}
+
+.profile__table th {
+  padding: 1rem 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 0.9rem;
+}
+
+.profile__table td {
+  padding: 1rem 2rem;
+}
+
+.profile__table tr:nth-child(odd) {
+  background-color: #9698a6;
+}
+
+.profile__table tr:first-child {
+  background-color: white;
 }
 /*# sourceMappingURL=style.css.map */

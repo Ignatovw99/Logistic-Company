@@ -1,5 +1,6 @@
-{% extends 'prototype/base.html' %}
-{% include 'prototype/header.html' %}
+{% extends 'base.html' %}
+{% include 'header.html' %}
+
 
 
 {% block title %} Shipments {% endblock %}
@@ -89,13 +90,12 @@
                         <th>Acceptor</th>
                         <th>Deliverer</th>
                         <th>Price</th>
-{#                        <th>Date</th>#}
                         <th>Action</th>
 
                     </tr>
 
 
-                   {% for row in shipments %}
+                   {% for row in shipments_client %}
 
 
                     <tr>
@@ -108,13 +108,12 @@
                         <td>{{row.receiver}}</td>
                         <td>{{row.acceptor}}</td>
                         <td>{{row.deliverer}}</td>
-{#                        <td>{{ row.date }}</td>#}
                         <td>{{row.price}}</td>
 
 
                         <td>
                             <a href="/update/{{row.id}}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.id}}">Edit</a>
-                            <a href="/shipping/delete/{{row.id}}" class="btn btn-danger btn-xs"  >Delete</a>
+                            <a href="/client_shipments/delete/{{row.id}}" class="btn btn-danger btn-xs"  >Delete</a>
 
 
                         </td>
@@ -145,7 +144,7 @@
          <div class="modal-body">
 
 
-            <form action="{{url_for('update_shipping')}}" method="POST">
+            <form action="{{url_for('update_shipping_clients')}}" method="POST">
 
 
                <div class="form-group">
@@ -158,19 +157,7 @@
 
 
 
-                <div class="form-group">
-                  <label>Status:</label>
-                    <select  name="status" value="1">
 
-                        <option value='1'> SHIPPED</option>
-                        <option value='2'> DELIVERED</option>
-                        <option value='3'> WAITING</option>
-                        <option value='4'> ACCEPTED</option>
-
-
-                    </select>
-
-               </div>
 
                 <div class="form-group">
 
@@ -254,6 +241,7 @@
 
                </div>
 
+
                  <div class="form-group">
 
 
@@ -283,25 +271,6 @@
 
 
 
-                <div class="form-group">
-
-
-                  <label>Acceptor:</label>
-
-                  <input type="number" class="form-control" name="acceptor" value="{{row.acceptor.id}}">
-
-
-               </div>
-
-                <div class="form-group">
-
-
-                  <label>Deliverer:</label>
-
-                  <input type="number" class="form-control" name="deliverer" value="{{row.deliverer.id}}">
-
-
-               </div>
 
             <div class="form-group">
 
@@ -419,7 +388,7 @@
          </div>
          <div class="modal-body">
 
-            <form action="{{url_for('insert_shipping')}}" method="POST">
+            <form action="/client_shipments/insert" method='POST'>
 
 
                <div class="form-group">
@@ -430,20 +399,7 @@
 
                </div>
 
-                <div class="form-group">
 
-                  <label>Status</label>
-                  <select  name="status" required="1">
-
-                        <option value='1'> SHIPPED </option>
-                        <option value='2'> DELIVERED</option>
-                        <option value='3'> WAITING</option>
-                        <option value='4'> ACCEPTED</option>
-
-                    </select>
-
-
-               </div>
                 <div class="form-group">
 
                   <label>From:</label>
@@ -512,7 +468,7 @@
                </div>
 
 
-                <div class="form-group">
+             <div class="form-group">
 
 
                   <label>Sender</label>
@@ -537,6 +493,8 @@
 
 
                </div>
+
+
 
                  <div class="form-group">
 
@@ -564,20 +522,7 @@
 
                </div>
 
-                <div class="form-group">
 
-                  <label>Acceptor:</label>
-                  <input type="number" class="form-control" name="acceptor" required="1">
-
-
-               </div>
-                <div class="form-group">
-
-                  <label>Deliverer:</label>
-                  <input type="number" class="form-control" name="deliverer" required="1">
-
-
-               </div>
 
 
                <div class="form-group">

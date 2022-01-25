@@ -1,18 +1,19 @@
-from flask import current_app as app
+from flask import Blueprint, current_app
 from app import db, models
 from faker import Faker
 
+commands = Blueprint("commands", __name__)
 
-@app.cli.command("create-database")
+@commands.cli.command("create-database")
 def create_database():
     # TODO: the administator should only delete and create the database tables in the PROD environment
     db.drop_all()
     db.create_all()
 
 
-@app.cli.command("seed-database")
+@commands.cli.command("seed-database")
 def seed_database():
-    if app.config["ENV"] != "development":
+    if current_app.config["ENV"] != "development":
         return
     
     fake = Faker()

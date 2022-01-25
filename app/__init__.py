@@ -18,11 +18,16 @@ def create_app(config_key=None):
 
 
 def initialize_extensions(app):
+    # initialize each Flask extension here to be activated in the app context
     db.init_app(app)
 
 
 def initialize_app_modules(app):
     with app.app_context():
-        from . import views
-        from . import auth
-        from . import commands
+        from app.auth.views import auth
+        # app.register_blueprint(auth, url_prefix="/auth")
+        app.register_blueprint(auth)
+        from app.main.views import main
+        app.register_blueprint(main)
+        from app.common.commands import commands
+        app.register_blueprint(commands)

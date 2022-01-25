@@ -1,68 +1,37 @@
-from flask import current_app as app, render_template, jsonify, request, flash, redirect, url_for, Response
+from flask import Blueprint, current_app as app, render_template, jsonify, request, flash, redirect, url_for, Response
 from app import db
-from app.auth import current_user, role_required
+from app import auth
+from app.auth.util import current_user, role_required
 from app.models import User, Role, Office, ShippingStatus, Shipment, ShippingAddress, Employee
-from app.validator_reg import RegistrationForm, LoginForm
 
 from sqlalchemy import exists, or_, and_
 
 from fpdf import FPDF
 
-@app.route("/")
+
+main = Blueprint("main", __name__)
+
+
+@main.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("main/index.html")
 
 
-@app.route("/profile")
+@main.route("/profile")
 def profile():
-    return render_template("profile.html")
+    return render_template("main/profile.html")
 
 
-@app.route("/register", methods = ['GET', 'POST'])
-def register():
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        username = form.username.data
-        email = form.email.data       
-        firstname = form.firstname.data
-        lastname = form.lastname.data
-        address = form.address.data
-        phone = form.phone.data
-        password = form.password.data
-
-        user_object = User.query.filter_by(username=username).first()
-        if user_object:
-            return "Someone else has taken that username."
-
-        user = User(username=username, email = email, firstname = firstname, lastname = lastname, address = address, phone = phone, password = password)
-        db.session.add(user)
-        db.session.commit()
-        return "Inserted into DB!"
-
-    return render_template('signup.html', title = 'Register', form = form)
-
-
-@app.route("/login", methods = ['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        if form.username.data == 'adminblog' and form.password.data == 'password':
-            return jsonify(request.form)
-        else:
-            return 'Login unsuccessful'
-    return render_template('login.html', title = 'Login', form = form)
-
-
-@app.route('/client_shipments/')
+@main.route('/client_shipments/')
 def ClientShipments():
     client = User.query.get(1);
     office_data = Office.query.all()
     status_list = [ShippingStatus.SHIPPED, ShippingStatus.DELIVERED, ShippingStatus.WAITING, ShippingStatus.ACCEPTED]
     shipments_client_data = Shipment.query.filter(or_(client == Shipment.sender,client == Shipment.receiver))
-    return render_template("prototype/client-shipments.html", shipments_client = shipments_client_data, offices = office_data, statuses = status_list)
+    return render_template("main/prototype/client-shipments.html", shipments_client = shipments_client_data, offices = office_data, statuses = status_list)
 
 
-@app.route('/client_shipments/insert', methods=['POST'])
+@main.route('/client_shipments/insert', methods=['POST'])
 def insert_shipping_clients():
     if request.method == 'POST':
         weight = request.form['weight']
@@ -114,10 +83,10 @@ def insert_shipping_clients():
 
         flash("Shipment Inserted Successfully")
 
-        return redirect(url_for('ClientShipments'))
+        return redirect(url_for('main.ClientShipments'))
 
 
-@app.route('/client_shipments/update', methods=['GET', 'POST'])
+@main.route('/client_shipments/update', methods=['GET', 'POST'])
 def update_shipping_clients():
     if request.method == 'POST':
         shipping_data = Shipment.query.get(request.form.get('id'))
@@ -144,10 +113,10 @@ def update_shipping_clients():
         db.session.commit()
         flash("Shipment Updated Successfully")
 
-        return redirect(url_for('ClientShipments'))
+        return redirect(url_for('main.ClientShipments'))
 
 
-@app.route('/client_shipments/delete/<id>/', methods=['GET', 'POST'])
+@main.route('/client_shipments/delete/<id>/', methods=['GET', 'POST'])
 def delete_shipping_clients(id):
     shipping_data = Shipment.query.get(id)
 
@@ -155,16 +124,16 @@ def delete_shipping_clients(id):
     db.session.commit()
     flash("Shipment Deleted Successfully")
 
-    return redirect(url_for('ClientShipments'))
+    return redirect(url_for('main.ClientShipments'))
 
 
-@app.route('/clients')
+@main.route('/clients')
 def Clients():
     client_data =User.query.filter(~ exists().where(User.id == Employee.id))
-    return render_template("prototype/clients.html", clients=client_data)
+    return render_template("main/prototype/clients.html", clients=client_data)
 
 
-@app.route('/client/insert', methods=['POST'])
+@main.route('/client/insert', methods=['POST'])
 def insert_client():
     if request.method == 'POST':
         first_name = request.form['firstname']
@@ -180,10 +149,10 @@ def insert_client():
 
         flash("Client added successfully.")
 
-        return redirect(url_for('Clients'))
+        return redirect(url_for('main.Clients'))
 
 
-@app.route('/client/update', methods=['GET', 'POST'])
+@main.route('/client/update', methods=['GET', 'POST'])
 def update_client():
     if request.method == 'POST':
         client_data = User.query.get(request.form.get('id'))
@@ -199,10 +168,10 @@ def update_client():
         db.session.commit()
         flash("Client updated successfully.")
 
-        return redirect(url_for('Clients'))
+        return redirect(url_for('main.Clients'))
 
 
-@app.route('/client/delete/<id>/', methods=['GET', 'POST'])
+@main.route('/client/delete/<id>/', methods=['GET', 'POST'])
 def delete_client(id):
     client_data = User.query.get(id)
     db.session.delete(client_data)
@@ -210,28 +179,28 @@ def delete_client(id):
 
     flash("Client Deleted Successfully")
 
-    return redirect(url_for('Clients'))
+    return redirect(url_for('main.Clients'))
 
 
 
-@app.route('/shipping')
+@main.route('/shipping')
 def shipment():
     all_data = Shipment.query.all()
     status_list = [ShippingStatus.SHIPPED,ShippingStatus.DELIVERED,ShippingStatus.WAITING,ShippingStatus.ACCEPTED]
 
-    return render_template("prototype/shipping.html", shipments = all_data, offices = Office.query.all(), statuses = status_list)
+    return render_template("main/prototype/shipping.html", shipments = all_data, offices = Office.query.all(), statuses = status_list)
 
 
 
-@app.route('/shipping/employee/', methods=['POST'])
+@main.route('/shipping/employee/', methods=['POST'])
 def shipments_registered_by_employee():
     employee_id = request.form['id_employee']
     employee = Employee.query.get(employee_id);
 
     shipments_by_employee= Shipment.query.filter(employee == Shipment.acceptor)
-    return render_template("prototype/shipping.html", shipments = shipments_by_employee)
+    return render_template("main/prototype/shipping.html", shipments = shipments_by_employee)
 
-@app.route('/shipping',methods=['POST'])
+@main.route('/shipping',methods=['POST'])
 def shipments_status():
     status_form = request.form['status_filter']
 
@@ -249,36 +218,36 @@ def shipments_status():
 
     status_shipments= Shipment.query.filter(Shipment.status == status )
 
-    return render_template("prototype/shipping.html", shipments = status_shipments, statuses = status_list)
+    return render_template("main/prototype/shipping.html", shipments = status_shipments, statuses = status_list)
 
 
-@app.route('/shipping/shipment/', methods=['POST'])
+@main.route('/shipping/shipment/', methods=['POST'])
 def shipment_by_id():
     shipment_id= request.form['id_shipment']
     shipment = Shipment.query.filter_by(id=shipment_id);
 
-    return render_template("prototype/shipping.html", shipments = shipment)
+    return render_template("main/prototype/shipping.html", shipments = shipment)
 
 
 
-@app.route('/shipping/sender/', methods=['POST'])
+@main.route('/shipping/sender/', methods=['POST'])
 def send_by_client_shipments():
     sender_id= request.form['id_sender']
     client = User.query.get(sender_id);
 
 
     shipments_by_sender= Shipment.query.filter(client == Shipment.sender)
-    return render_template("prototype/shipping.html", shipments = shipments_by_sender)
+    return render_template("main/prototype/shipping.html", shipments = shipments_by_sender)
 
-@app.route('/shipping/receiver/', methods=['POST'])
+@main.route('/shipping/receiver/', methods=['POST'])
 def received_by_client_shipments():
     receiver_id = request.form['id_receiver']
     client = User.query.get(receiver_id);
 
     shipments_by_receiver= Shipment.query.filter(client == Shipment.receiver)
-    return render_template("prototype/shipping.html", shipments = shipments_by_receiver)
+    return render_template("main/prototype/shipping.html", shipments = shipments_by_receiver)
 
-@app.route('/shipping/insert', methods=['POST'])
+@main.route('/shipping/insert', methods=['POST'])
 def insert_shipping():
     if request.method == 'POST':
         weight = request.form['weight']
@@ -337,11 +306,11 @@ def insert_shipping():
 
         flash("Shipment Inserted Successfully")
 
-        return redirect(url_for('shipment'))
+        return redirect(url_for('main.shipment'))
 
 
 
-@app.route('/shipping/update', methods=['GET', 'POST'])
+@main.route('/shipping/update', methods=['GET', 'POST'])
 def update_shipping():
     if request.method == 'POST':
         shipping_data = Shipment.query.get(request.form.get('id'))
@@ -377,11 +346,11 @@ def update_shipping():
         db.session.commit()
         flash("Shipment Updated Successfully")
 
-        return redirect(url_for('shipment'))
+        return redirect(url_for('main.shipment'))
 
 
 
-@app.route('/shipping/delete/<id>/', methods=['GET', 'POST'])
+@main.route('/shipping/delete/<id>/', methods=['GET', 'POST'])
 def delete_shipping(id):
     shipping_data = Shipment.query.get(id)
 
@@ -389,19 +358,19 @@ def delete_shipping(id):
     db.session.commit()
     flash("Shipment Deleted Successfully")
 
-    return redirect(url_for('shipment'))
+    return redirect(url_for('main.shipment'))
 
 
 
-@app.route('/offices')
+@main.route('/offices')
 def Offices():
     all_data = Office.query.all()
 
-    return render_template("prototype/offices.html", offices=all_data)
+    return render_template("main/prototype/offices.html", offices=all_data)
 
 
 
-@app.route('/offices/insert', methods=['POST'])
+@main.route('/offices/insert', methods=['POST'])
 def insert_office():
     if request.method == 'POST':
         office_name = request.form['officename']
@@ -413,11 +382,11 @@ def insert_office():
 
         flash("Office Inserted Successfully")
 
-        return redirect(url_for('Offices'))
+        return redirect(url_for('main.Offices'))
 
 
 
-@app.route('/offices/update', methods=['GET', 'POST'])
+@main.route('/offices/update', methods=['GET', 'POST'])
 def update_office():
     if request.method == 'POST':
         office_data = Office.query.get(request.form.get('id'))
@@ -427,11 +396,11 @@ def update_office():
         db.session.commit()
         flash("Office Updated Successfully")
 
-        return redirect(url_for('Offices'))
+        return redirect(url_for('main.Offices'))
 
 
 
-@app.route('/offices/delete/<id>/', methods=['GET', 'POST'])
+@main.route('/offices/delete/<id>/', methods=['GET', 'POST'])
 def delete_office(id):
     office_data = Office.query.get(id)
 
@@ -439,18 +408,18 @@ def delete_office(id):
     db.session.commit()
     flash("Office Deleted Successfully")
 
-    return redirect(url_for('Offices'))
+    return redirect(url_for('main.Offices'))
 
 
-@app.route('/employees')
+@main.route('/employees')
 def Employees():
     employees_data =Employee.query.all()
 
 
-    return render_template("prototype/employees.html", employees=employees_data)
+    return render_template("main/prototype/employees.html", employees=employees_data)
 
 
-@app.route('/employees/insert', methods=['POST'])
+@main.route('/employees/insert', methods=['POST'])
 def insert_employee():
     if request.method == 'POST':
         first_name = request.form['firstname']
@@ -473,11 +442,11 @@ def insert_employee():
         else:
             flash("This office ID does not exist. Try again.", 'error')
 
-        return redirect(url_for('Employees'))
+        return redirect(url_for('main.Employees'))
 
 
 
-@app.route('/employees/update', methods=['GET', 'POST'])
+@main.route('/employees/update', methods=['GET', 'POST'])
 def update_employee():
     if request.method == 'POST':
         employee_data = Employee.query.get(request.form.get('id'))
@@ -493,10 +462,10 @@ def update_employee():
         db.session.commit()
         flash("Employee Updated Successfully")
 
-        return redirect(url_for('Employees'))
+        return redirect(url_for('main.Employees'))
 
 
-@app.route('/employees/delete/<id>/', methods=['GET', 'POST'])
+@main.route('/employees/delete/<id>/', methods=['GET', 'POST'])
 def delete_employee(id):
     employee_data = Employee.query.get(id)
     user_data = User.query.get(id)
@@ -506,7 +475,7 @@ def delete_employee(id):
 
     flash("Employee Deleted Successfully")
 
-    return redirect(url_for('Employees'))
+    return redirect(url_for('main.Employees'))
 
 
 
@@ -525,7 +494,7 @@ def delete_employee(id):
 # ------------------------------R e p o r t s----------------------------------------------------------
 
 
-@app.route('/download/report/employees/pdf')
+@main.route('/download/report/employees/pdf')
 def download_report_employees():
     result = Employee.query.all()
     pdf = FPDF()
@@ -584,7 +553,7 @@ def download_report_employees():
                     headers={'Content-Disposition': 'attachment;filename=employees_report.pdf'})
 
 
-@app.route('/download/report/clients/pdf')
+@main.route('/download/report/clients/pdf')
 def download_report_clients():
     result = User.query.filter(~ exists().where(User.id == Employee.id))
     pdf = FPDF()
@@ -638,7 +607,7 @@ def download_report_clients():
                     headers={'Content-Disposition': 'attachment;filename=clients_report.pdf'})
 
 
-@app.route('/download/report/shipments/pdf')
+@main.route('/download/report/shipments/pdf')
 def download_report_shipments():
     result =Shipment.query.all()
     pdf = FPDF()
@@ -704,7 +673,7 @@ def download_report_shipments():
                     headers={'Content-Disposition': 'attachment;filename=shipments_report.pdf'})
 
 
-@app.route('/download/report/shipments-by-employee/pdf', methods=['GET', 'POST'])
+@main.route('/download/report/shipments-by-employee/pdf', methods=['GET', 'POST'])
 def download_report_shipments_by_employee():
     employee_id = request.form['id_employee']
     employee = Employee.query.get(employee_id);
@@ -773,7 +742,7 @@ def download_report_shipments_by_employee():
     return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf',
                     headers={'Content-Disposition': 'attachment;filename=shipments_by_employee_report.pdf'})
 
-@app.route('/download/report/shipments-by-sender/pdf',methods=['GET', 'POST'])
+@main.route('/download/report/shipments-by-sender/pdf',methods=['GET', 'POST'])
 def download_report_shipments_by_sender():
     sender_id = request.form['id_sender']
     client = User.query.get(sender_id);
@@ -844,14 +813,14 @@ def download_report_shipments_by_sender():
 
 
 
-@app.route('/download/report/', methods=['GET', 'POST'])
+@main.route('/download/report/', methods=['GET', 'POST'])
 def download_report():
     status_list = [ShippingStatus.SHIPPED, ShippingStatus.DELIVERED, ShippingStatus.WAITING, ShippingStatus.ACCEPTED]
-    return render_template("prototype/download.html",statuses = status_list)
+    return render_template("main/prototype/download.html",statuses = status_list)
 
 
 
-@app.route('/download/report/shipments-by-receiver/pdf', methods=['GET', 'POST'])
+@main.route('/download/report/shipments-by-receiver/pdf', methods=['GET', 'POST'])
 def download_report_shipments_by_receiver():
     receiver_id = request.form['id_receiver']
     client = User.query.get(receiver_id);
@@ -920,7 +889,7 @@ def download_report_shipments_by_receiver():
                     headers={'Content-Disposition': 'attachment;filename=shipments_by_receiver_report.pdf'})
 
 
-@app.route('/download/report/shipments-by-status/pdf', methods=['GET', 'POST'])
+@main.route('/download/report/shipments-by-status/pdf', methods=['GET', 'POST'])
 def download_report_shipments_by_status():
     status_form = request.form['status_filter']
 

@@ -1,6 +1,5 @@
-{% extends 'prototype/base.html' %}
-{% include 'prototype/header.html' %}
-
+{% extends 'base.html' %}
+{% include 'header.html' %}
 
 
 {% block title %} Shipments {% endblock %}
@@ -44,24 +43,24 @@
 
                 {% endif %}
                 {% endwith %}
-            <form action="{{url_for('shipment_by_id')}}" method="POST">
+            <form action="{{url_for('main.shipment_by_id')}}" method="POST">
                  Filter by shipment's id:<input type="number"  name="id_shipment" value="">
                   <button class="btn btn-primary" type="submit">Filter</button>
               </form>
 
-              <form action="{{url_for('send_by_client_shipments')}}" method="POST">
+              <form action="{{url_for('main.send_by_client_shipments')}}" method="POST">
                 Filter by sender id:<input type="number"  name="id_sender" value={{ id }}>
                   <button class="btn btn-primary" type="submit">Filter</button>
               </form>
-            <form action="{{url_for('received_by_client_shipments')}}" method="POST">
+            <form action="{{url_for('main.received_by_client_shipments')}}" method="POST">
                 Filter by receiver id:<input type="number"  name="id_receiver" value="">
                   <button class="btn btn-primary" type="submit">Filter</button>
               </form>
-            <form action="{{url_for('shipments_registered_by_employee')}}" method="POST">
+            <form action="{{url_for('main.shipments_registered_by_employee')}}" method="POST">
                  Filter by employee's id:<input type="number"  name="id_employee" value="">
                   <button class="btn btn-primary" type="submit">Filter</button>
               </form>
-            <form action="{{url_for('shipments_status')}}" method="POST">
+            <form action="{{url_for('main.shipments_status')}}" method="POST">
                 Filter by status:<select  name="status_filter" value=" ">
                          {% for row in statuses %}
                         <option value={{row}}> {{row}}</option>
@@ -90,12 +89,13 @@
                         <th>Acceptor</th>
                         <th>Deliverer</th>
                         <th>Price</th>
+{#                        <th>Date</th>#}
                         <th>Action</th>
 
                     </tr>
 
 
-                   {% for row in shipments_client %}
+                   {% for row in shipments %}
 
 
                     <tr>
@@ -108,12 +108,13 @@
                         <td>{{row.receiver}}</td>
                         <td>{{row.acceptor}}</td>
                         <td>{{row.deliverer}}</td>
+{#                        <td>{{ row.date }}</td>#}
                         <td>{{row.price}}</td>
 
 
                         <td>
                             <a href="/update/{{row.id}}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.id}}">Edit</a>
-                            <a href="/client_shipments/delete/{{row.id}}" class="btn btn-danger btn-xs"  >Delete</a>
+                            <a href="/shipping/delete/{{row.id}}" class="btn btn-danger btn-xs"  >Delete</a>
 
 
                         </td>
@@ -144,7 +145,7 @@
          <div class="modal-body">
 
 
-            <form action="{{url_for('update_shipping_clients')}}" method="POST">
+            <form action="{{url_for('main.update_shipping')}}" method="POST">
 
 
                <div class="form-group">
@@ -157,7 +158,19 @@
 
 
 
+                <div class="form-group">
+                  <label>Status:</label>
+                    <select  name="status" value="1">
 
+                        <option value='1'> SHIPPED</option>
+                        <option value='2'> DELIVERED</option>
+                        <option value='3'> WAITING</option>
+                        <option value='4'> ACCEPTED</option>
+
+
+                    </select>
+
+               </div>
 
                 <div class="form-group">
 
@@ -241,7 +254,6 @@
 
                </div>
 
-
                  <div class="form-group">
 
 
@@ -271,6 +283,25 @@
 
 
 
+                <div class="form-group">
+
+
+                  <label>Acceptor:</label>
+
+                  <input type="number" class="form-control" name="acceptor" value="{{row.acceptor.id}}">
+
+
+               </div>
+
+                <div class="form-group">
+
+
+                  <label>Deliverer:</label>
+
+                  <input type="number" class="form-control" name="deliverer" value="{{row.deliverer.id}}">
+
+
+               </div>
 
             <div class="form-group">
 
@@ -388,7 +419,7 @@
          </div>
          <div class="modal-body">
 
-            <form action="/client_shipments/insert" method='POST'>
+            <form action="{{url_for('main.insert_shipping')}}" method="POST">
 
 
                <div class="form-group">
@@ -399,7 +430,20 @@
 
                </div>
 
+                <div class="form-group">
 
+                  <label>Status</label>
+                  <select  name="status" required="1">
+
+                        <option value='1'> SHIPPED </option>
+                        <option value='2'> DELIVERED</option>
+                        <option value='3'> WAITING</option>
+                        <option value='4'> ACCEPTED</option>
+
+                    </select>
+
+
+               </div>
                 <div class="form-group">
 
                   <label>From:</label>
@@ -468,7 +512,7 @@
                </div>
 
 
-             <div class="form-group">
+                <div class="form-group">
 
 
                   <label>Sender</label>
@@ -493,8 +537,6 @@
 
 
                </div>
-
-
 
                  <div class="form-group">
 
@@ -522,7 +564,20 @@
 
                </div>
 
+                <div class="form-group">
 
+                  <label>Acceptor:</label>
+                  <input type="number" class="form-control" name="acceptor" required="1">
+
+
+               </div>
+                <div class="form-group">
+
+                  <label>Deliverer:</label>
+                  <input type="number" class="form-control" name="deliverer" required="1">
+
+
+               </div>
 
 
                <div class="form-group">

@@ -1,9 +1,9 @@
-{% extends 'prototype/base.html' %}
-{% include 'prototype/header.html' %}
+{% extends 'templates/base.html' %}
+{% include 'templates/header.html' %}
 
 
 
-{% block title %} Clients {% endblock %}
+{% block title %} Employees {% endblock %}
 
 
 
@@ -15,8 +15,8 @@
 
             <div class="jumbotron p-3">
 
-                <h2>Manage <b>Clients </b>  <button type="button"  class="btn btn-success float-right"
-                data-toggle="modal" data-target="#mymodal">Add New Client</button> </h2>
+                <h2>Manage <b>Employees </b>  <button type="button"  class="btn btn-success float-right"
+                data-toggle="modal" data-target="#mymodal">Add New Employees</button> </h2>
 
 
                 {% with messages = get_flashed_messages() %}
@@ -57,28 +57,29 @@
                         <th>Phone</th>
                         <th>Email</th>
                         <th>Password</th>
+                        <th>Office ID</th>
                         <th>Action</th>
 
                     </tr>
 
 
-                   {% for row in clients %}
+                   {% for row in employees %}
 
 
                     <tr>
                         <td>{{row.id}}</td>
-                        <td>{{row.first_name}}</td>
-                        <td>{{row.last_name}}</td>
-                        <td>{{row.address}}</td>
-                        <td>{{row.phone_number}}</td>
-                        <td>{{row.email}}</td>
-                        <td>{{row.password}}</td>
-
+                        <td>{{row.user.first_name}}</td>
+                        <td>{{row.user.last_name}}</td>
+                        <td>{{row.user.address}}</td>
+                        <td>{{row.user.phone_number}}</td>
+                        <td>{{row.user.email}}</td>
+                        <td>{{row.user.password}}</td>
+                        <td>{{row.office_id}}</td>
 
 
                         <td>
-                            <a href="/client/update/{{row.id}}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.id}}">Edit</a>
-                            <a href="/client/delete/{{row.id}}" class="btn btn-danger btn-xs"  >Delete</a>
+                            <a href="/update/{{row.id}}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.id}}">Edit</a>
+                            <a href="/employees/delete/{{row.id}}" class="btn btn-danger btn-xs"  >Delete</a>
 
 
                         </td>
@@ -106,16 +107,16 @@
          <div class="modal-body">
 
 
-            <form action="{{url_for('update_client')}}" method="POST">
+            <form action="{{url_for('update_employee')}}" method="POST">
 
 
                <div class="form-group">
 
 
                   <label>First name:</label>
-                   <input type="hidden"  name="id" value="{{row.id}}">
+                   <input type="hidden"  name="id" value="{{row.user.id}}">
 
-                  <input type="text" class="form-control" name="firstname" value="{{row.first_name}}">
+                  <input type="text" class="form-control" name="firstname" value="{{row.user.first_name}}">
 
 
                </div>
@@ -126,7 +127,7 @@
                   <label>Last name:</label>
                    <input type="hidden"  name="id" value="{{row.id}}">
 
-                  <input type="text" class="form-control" name="lastname" value="{{row.last_name}}">
+                  <input type="text" class="form-control" name="lastname" value="{{row.user.last_name}}">
 
 
                </div>
@@ -136,7 +137,7 @@
 
                   <label>Address:</label>
 
-                  <input type="text" class="form-control" name="address" value="{{row.address}}">
+                  <input type="text" class="form-control" name="address" value="{{row.user.address}}">
 
 
                </div>
@@ -149,7 +150,7 @@
 
                   <label>Phone:</label>
 
-                  <input type="text" class="form-control" name="phone" value="{{row.phone_number}}">
+                  <input type="text" class="form-control" name="phone" value="{{row.user.phone_number}}">
 
 
                </div>
@@ -160,7 +161,7 @@
 
                   <label>Email:</label>
 
-                  <input type="text" class="form-control" name="email" value="{{row.email}}">
+                  <input type="text" class="form-control" name="email" value="{{row.user.email}}">
 
 
                </div>
@@ -171,13 +172,22 @@
 
                   <label>Password:</label>
 
-                  <input type="text" class="form-control" name="password" value="{{row.password}}">
+                  <input type="text" class="form-control" name="password" value="{{row.user.password}}">
 
 
                </div>
 
 
 
+                <div class="form-group">
+
+
+                  <label>Office ID:</label>
+
+                  <input type="text" class="form-control" name="officeid" value="{{row.office_id}}">
+
+
+               </div>
 
 
 
@@ -235,7 +245,7 @@
          </div>
          <div class="modal-body">
 
-            <form action="{{url_for('insert_client')}}" method="POST">
+            <form action="{{url_for('insert_employee')}}" method="POST">
 
 
                <div class="form-group">
@@ -282,7 +292,14 @@
 
                </div>
 
+                <div class="form-group">
 
+
+                  <label>Office ID:</label>
+                  <input type="number" class="form-control" name="officeid" required="1">
+
+
+               </div>
 
                 <div class="form-group">
 
@@ -297,7 +314,7 @@
                <div class="form-group">
 
 
-                  <button class="btn btn-primary" type="submit">Add Client</button>
+                  <button class="btn btn-primary" type="submit">Add Employee</button>
 
 
                </div>

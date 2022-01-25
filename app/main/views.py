@@ -362,11 +362,11 @@ def delete_shipping(id):
 
 
 
-@main.route('/offices')
-def Offices():
-    all_data = Office.query.all()
+# @main.route('/offices')
+# def Offices():
+#     all_data = Office.query.all()
 
-    return render_template("main/prototype/offices.html", offices=all_data)
+#     return render_template("main/prototype/offices.html", offices=all_data)
 
 
 
@@ -376,7 +376,7 @@ def insert_office():
         office_name = request.form['officename']
         office_address = request.form['officeaddress']
 
-        office_data = Office(office_name, office_address)
+        office_data = Office(office_address)
         db.session.add(office_data)
         db.session.commit()
 

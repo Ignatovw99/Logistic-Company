@@ -58,9 +58,10 @@ class User(db.Model):
 
 
 class Role(enum.Enum):
-    SYSTEM_ADMIN = 1
-    CLIENT = 2
-    EMPLOYEE = 3
+    CLIENT = 1
+    EMPLOYEE = 2
+    ADMIN = 3
+    ROOT = 4
 
 
 class UserRole(db.Model):
@@ -112,13 +113,12 @@ class Office(db.Model):
     __tablename__ = "offices"
     
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False, unique=True)
-    address = db.Column(db.String(200), nullable=False)
+    address = db.Column(db.String(200), nullable=False, unique=True)
 
     employees = db.relationship(Employee, backref="office", lazy="select")
 
     def __repr__(self):
-        return f"Office(name={self.name}, address={self.address})"
+        return f"Office(address={self.address})"
 
 
 class ShippingStatus(enum.Enum):

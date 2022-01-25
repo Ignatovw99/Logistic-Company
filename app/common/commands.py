@@ -36,7 +36,7 @@ def seed_database():
 
 
     def generate_roles(users):
-        roles = [role for role in models.Role if role != models.Role.SYSTEM_ADMIN]
+        roles = [role for role in models.Role if role != models.Role.ROOT]
         for i, user in enumerate(users):
             user_role = models.UserRole(user=user, role=roles[i % len(roles)])
             db.session.add(user_role)
@@ -55,7 +55,7 @@ def seed_database():
     def generate_offices():
         offices = []
         for _ in range(10):
-            office = models.Office(name=fake.name(), address=fake.address())
+            office = models.Office(address=fake.address())
             db.session.add(office)
             offices.append(office)
         

@@ -1,9 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect
+
 from config import env_config
 
 
 db = SQLAlchemy()
+csrf = CSRFProtect()
 
 
 def create_app(config_key=None):
@@ -20,14 +23,17 @@ def create_app(config_key=None):
 def initialize_extensions(app):
     # initialize each Flask extension here to be activated in the app context
     db.init_app(app)
+    csrf.init_app(app)
 
 
 def initialize_app_modules(app):
     with app.app_context():
         from app.auth.views import auth
-        # app.register_blueprint(auth, url_prefix="/auth")
-        app.register_blueprint(auth)
         from app.main.views import main
-        app.register_blueprint(main)
         from app.common.commands import commands
+        from app.office.views import office
+
+        app.register_blueprint(auth)
+        app.register_blueprint(main)
         app.register_blueprint(commands)
+        app.register_blueprint(office, url_prefix="/offices")

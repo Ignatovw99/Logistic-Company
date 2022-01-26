@@ -1,46 +1,65 @@
-from flask import Blueprint, render_template, jsonify, request, flash, redirect, url_for, Response
-from app import db
-from app.auth.util import current_user, role_required
-from app.models import User, Role, Office, ShippingStatus, Shipment, ShippingAddress, Employee
+from flask import Blueprint, render_template, flash, redirect, url_for
+
+from app.models import User, Role
+
+from app.auth.util import login_user, anonymous_required, add_remember_cookies, current_user
 from app.auth.forms import RegistrationForm, LoginForm
+from app.auth.helper import find_user_by_email
+
+from app.common.util import persist
+
 
 auth = Blueprint("auth", __name__)
 
+
 @auth.route("/register", methods = ['GET', 'POST'])
+@anonymous_required
 def register():
     form = RegistrationForm()
+
     if form.validate_on_submit():
-        username = form.username.data
         email = form.email.data       
-        firstname = form.firstname.data
-        lastname = form.lastname.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
         address = form.address.data
-        phone = form.phone.data
+        phone_number = form.phone_number.data
         password = form.password.data
 
-        user_object = User.query.filter_by(username=username).first()
-        if user_object:
-            return "Someone else has taken that username."
-
-        user = User(username=username, email = email, firstname = firstname, lastname = lastname, address = address, phone = phone, password = password)
-        db.session.add(user)
-        db.session.commit()
-        return "Inserted into DB!"
-        # return redirect(url_for("auth.login"))
+        if find_user_by_email(email):
+            flash("This email is already taken")
+        else:
+            user = User(email = email, first_name = first_name, last_name = last_name, address = address, phone_number = phone_number, password = password)
+            user.add_role(Role.CLIENT)
+            persist(user)
+            flash("Sucessful registration")
+            return redirect(url_for("auth.login"))
 
     return render_template('auth/signup.html', title = 'Register', form = form)
 
 
 @auth.route("/login", methods = ['GET', 'POST'])
+@anonymous_required
 def login():
     form = LoginForm()
-    if form.validate_on_submit():
-        if form.username.data == 'adminblog' and form.password.data == 'password':
-            return jsonify(request.form)
-        else:
-            return 'Login unsuccessful'
-    return render_template('auth/login.html', title = 'Login', form = form)
 
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        remember_me = form.remember.data
+
+        user = find_user_by_email(email)
+
+        if user and user.verify_password(password):
+            login_user(user)
+            response = redirect(url_for("main.profile"))
+            if remember_me:
+                add_remember_cookies(response, user)
+            flash("Logged in successfully")
+            return response
+        else:
+            flash("Invalid credentials")
+
+    return render_template('auth/login.html', title = 'Login', form = form)
 
 
 @auth.app_context_processor

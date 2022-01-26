@@ -19,32 +19,46 @@ class User(db.Model):
     remember_hashes = db.relationship("Remember", backref="user", lazy="dynamic", cascade="all, delete-orphan")
     roles = db.relationship("UserRole", backref="user", lazy="joined", cascade="all, delete-orphan")
 
+
     @property
     def password(self):
         raise AttributeError("password is not a readable attribute")
     
+
     @password.setter
     def password(self, password):
         self.password_hash = generate_password_hash(password)
 
+
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
 
     def is_authenticated(self):
         return not "" == self.email and not self.email is None
 
+
     def is_anonymous(self):
         return not self.is_authenticated()
+
 
     def has_role(self, role):
         user_roles = [user_role.role for user_role in self.roles]
         return role in user_roles
+
+    def add_role(self, role):
+        has_given_role = [user_role for user_role in self.roles if user_role.role == role]
+        if not has_given_role:
+            user_role = UserRole(user=self, role=role)
+            self.roles.append(user_role)
+
 
     def create_remember_token(self):
         remember = Remember(self.id)
         db.session.add(remember)
         db.session.commit()
         return remember.token
+
 
     def check_remember_token(self, token):
         if token:
@@ -53,8 +67,10 @@ class User(db.Model):
                     return True
         return False
 
+
     def __repr__(self):
         return f"User(first_name={self.first_name}, last_name={self.last_name})"
+
 
 
 class Role(enum.Enum):
@@ -64,14 +80,17 @@ class Role(enum.Enum):
     ROOT = 4
 
 
+
 class UserRole(db.Model):
     __tablename__ = "users_roles"
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True, autoincrement=False)
     role = db.Column(db.Enum(Role), primary_key=True, autoincrement=False)
     
+
     def __repr__(self):
         return f"UserRole(user={self.user}, role={self.role})"
+
 
 
 class Remember(db.Model):
@@ -85,16 +104,20 @@ class Remember(db.Model):
         self.generate_token_hash()
         self.user_id = user_id
         
+
     def generate_token_hash(self):
         # This token is a temporary property. It will only exist until the instance of the Remember model gets deleted
         self.token = token_urlsafe(20)
         self.remember_hash = generate_password_hash(self.token)
 
+
     def check_token(self, token):
         return check_password_hash(self.remember_hash, token)
 
+
     def __repr__(self):
         return f"Remember(user={self.user}, remember_hash={self.remember_hash})"
+
 
 
 class Employee(db.Model):
@@ -104,6 +127,7 @@ class Employee(db.Model):
     office_id = db.Column(db.Integer, db.ForeignKey("offices.id"))
 
     user = db.relationship(User, foreign_keys=id, lazy="joined")
+
 
     def __repr__(self):
         return f"Employee(first_name={self.user.first_name}, last_name={self.user.last_name}, office_id={self.office_id})"

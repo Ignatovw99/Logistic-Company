@@ -6,7 +6,7 @@ from app.auth.util import login_user, anonymous_required, add_remember_cookies, 
 from app.auth.forms import RegistrationForm, LoginForm
 from app.common.util import find_user_by_email
 
-from app.common.util import persist
+from app.common.util import persist_model
 
 
 auth = Blueprint("auth", __name__)
@@ -30,7 +30,7 @@ def register():
         else:
             user = User(email = email, first_name = first_name, last_name = last_name, address = address, phone_number = phone_number, password = password)
             user.add_role(Role.CLIENT)
-            persist(user)
+            persist_model(user)
             flash("Sucessful registration")
             return redirect(url_for("auth.login"))
 

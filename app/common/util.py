@@ -1,15 +1,17 @@
 from app import db
 from app.models import User
 
+def commit_db_transaction():
+    db.session.commit()
 
-def persist(object):
+def persist_model(object):
     db.session.add(object)
-    db.session.commit()
+    commit_db_transaction()
 
 
-def delete(object):
+def delete_model(object):
     db.session.delete(object)
-    db.session.commit()
+    commit_db_transaction()
 
 
 def find_user_by_email(email):

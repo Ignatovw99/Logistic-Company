@@ -1,12 +1,40 @@
+import click
+
 from flask import Blueprint, current_app
 from app import db, models
 from faker import Faker
 
+from app.common.util import find_user_by_email
+
+
 commands = Blueprint("commands", __name__)
+
+
+@commands.cli.command("add-sys-admin")
+@click.argument("email")
+@click.argument("password")
+@click.argument("first_name")
+@click.argument("last_name")
+@click.argument("phone_number")
+def add_sys_admin(email, password, first_name, last_name, phone_number):
+    exists_root = [user_role for user_role in models.UserRole.query.all() if user_role.role == models.Role.ROOT]
+    if exists_root:
+        print("There is already a sys admin")
+        return
+    
+    root = models.User(email=email, password=password, first_name=first_name, last_name=last_name, phone_number=phone_number)
+    root.add_role(models.Role.CLIENT)
+    root.add_role(models.Role.EMPLOYEE)
+    root.add_role(models.Role.ADMIN)
+    root.add_role(models.Role.ROOT)
+
+    employee_root = models.Employee(user=root)
+    db.session.add(employee_root)
+    db.session.commit()
+
 
 @commands.cli.command("create-database")
 def create_database():
-    # TODO: the administator should only delete and create the database tables in the PROD environment
     db.drop_all()
     db.create_all()
 

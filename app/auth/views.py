@@ -4,7 +4,7 @@ from app.models import User, Role
 
 from app.auth.util import login_user, anonymous_required, add_remember_cookies, current_user
 from app.auth.forms import RegistrationForm, LoginForm
-from app.auth.helper import find_user_by_email
+from app.common.util import find_user_by_email
 
 from app.common.util import persist
 

@@ -75,3 +75,32 @@
     }
 
 }
+
+.addButton{
+    color: $darkBlue;
+    background: linear-gradient(to right, #31d35c, #2bb7da);
+    border-radius: 50px;
+    font-weight: 400;
+    font-size: 1rem;
+    padding: 6px;
+    
+}
+.addButton:hover{
+   
+   background: linear-gradient(to left, $limeGreen, $brightCyan);
+   transition: 300ms ease-in-out;
+}
+   
+
+.removeButton{
+    color: $darkBlue;
+    background: linear-gradient(to right, $crimsonRed, $orangeRed);
+    border-radius: 50px;
+    font-weight: 400;
+    font-size: 1rem;
+    padding: 6px;
+}
+
+.removeButton:hover{
+    background: linear-gradient(to left, $crimsonRed, $orangeRed);
+}

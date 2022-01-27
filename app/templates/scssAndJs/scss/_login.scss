@@ -1,14 +1,14 @@
-.loginS{
-    background-color: $veryLightGrey;
+.login{
     display: flex;
-    justify-content: center;
+    background-color: $veryLightGrey;
+    &__menu{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    &__menu form{
+        align-items: center;
+    }
 }
 
-.login{
-    background-color: $white;
-    
-    border: 1px solid gray;
-    
-    text-align: center;
-   
-}

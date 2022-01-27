@@ -588,4 +588,52 @@ h2 {
 .profile__table tr:first-child {
   background-color: white;
 }
+
+.addButton {
+  color: #2d314d;
+  background: -webkit-gradient(linear, left top, right top, from(#31d35c), to(#2bb7da));
+  background: linear-gradient(to right, #31d35c, #2bb7da);
+  border-radius: 50px;
+  font-weight: 400;
+  font-size: 1rem;
+  padding: 6px;
+}
+
+.addButton:hover {
+  background: -webkit-gradient(linear, right top, left top, from(#31d35c), to(#2bb7da));
+  background: linear-gradient(to left, #31d35c, #2bb7da);
+  -webkit-transition: 300ms ease-in-out;
+  transition: 300ms ease-in-out;
+}
+
+.removeButton {
+  color: #2d314d;
+  background: -webkit-gradient(linear, left top, right top, from(crimson), to(#ff4400));
+  background: linear-gradient(to right, crimson, #ff4400);
+  border-radius: 50px;
+  font-weight: 400;
+  font-size: 1rem;
+  padding: 6px;
+}
+
+.removeButton:hover {
+  background: -webkit-gradient(linear, right top, left top, from(crimson), to(#ff4400));
+  background: linear-gradient(to left, crimson, #ff4400);
+}
+
+.loginS {
+  background-color: #f4f4f4;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.login {
+  background-color: white;
+  border: 1px solid gray;
+  text-align: center;
+}
 /*# sourceMappingURL=style.css.map */

@@ -79,7 +79,7 @@ def login_required(view_func):
     def handle_login_requirement(*args, **kwargs):
         if current_user.is_anonymous():
             flash("You need to be logged in to access this page", "error")
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("auth.login", redirect_handler=request.blueprint + "." + view_func.__name__))
         return view_func(*args, **kwargs)
 
     return handle_login_requirement

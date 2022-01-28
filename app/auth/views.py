@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, url_for
+from flask import Blueprint, render_template, flash, redirect, request, url_for
 
 from app.models import User, Role
 
@@ -51,7 +51,12 @@ def login():
 
         if user and user.verify_password(password):
             login_user(user)
-            response = redirect(url_for("main.profile"))
+            
+            redirect_handler = "main.profile"
+            if "redirect_handler" in request.args:
+                redirect_handler = request.args["redirect_handler"]
+            response = redirect(url_for(redirect_handler))
+            
             if remember_me:
                 add_remember_cookies(response, user)
             flash("Logged in successfully")

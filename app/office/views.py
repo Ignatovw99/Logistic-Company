@@ -4,7 +4,7 @@ from app.models import Office, Role
 from app.auth.util import login_required, role_required
 from app.common.util import commit_db_transaction, persist_model, delete_model
 from app.office.forms import OfficeForm
-from app.office.helper import find_office_by_id, is_address_available, find_all_active_shipments_by_office
+from app.office.util import find_office_by_id, is_address_available, find_all_active_shipments_by_office
 
 
 office = Blueprint("office", __name__)

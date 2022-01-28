@@ -1,6 +1,7 @@
 from app import db
 from secrets import token_urlsafe 
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import backref
 
 import enum
 
@@ -46,11 +47,31 @@ class User(db.Model):
         user_roles = [user_role.role for user_role in self.roles]
         return role in user_roles
 
+
     def add_role(self, role):
         has_given_role = [user_role for user_role in self.roles if user_role.role == role]
         if not has_given_role:
             user_role = UserRole(user=self, role=role)
             self.roles.append(user_role)
+
+
+    def remove_role(self, role):
+        roles_to_delete = [user_role for user_role in self.roles if user_role.role == role]
+        for role_to_delete in roles_to_delete:
+            self.roles.remove(role_to_delete)
+
+
+    def find_highest_role(self):
+        roles = [user_role.role for user_role in self.roles]
+        highest_role = None
+        for role in roles:
+            if highest_role is None:
+                highest_role = role
+            else:
+                if highest_role.value < role.value:
+                    highest_role = role
+        
+        return highest_role
 
 
     def create_remember_token(self):
@@ -124,7 +145,7 @@ class Employee(db.Model):
     __tablename__ = "employees"
 
     id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
-    office_id = db.Column(db.Integer, db.ForeignKey("offices.id"))
+    office_id = db.Column(db.Integer, db.ForeignKey("offices.id", ondelete="SET NULL"))
 
     user = db.relationship(User, foreign_keys=id, lazy="joined")
 
@@ -139,24 +160,24 @@ class Office(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     address = db.Column(db.String(200), nullable=False, unique=True)
 
-    employees = db.relationship(Employee, backref="office", lazy="select")
+    employees = db.relationship(Employee, backref=backref("office", uselist=False), lazy="select")
 
     def __repr__(self):
         return f"Office(address={self.address})"
 
 
 class ShippingStatus(enum.Enum):
-    SHIPPED = 1
-    DELIVERED = 2
-    WAITING = 3
-    ACCEPTED = 4
+    ACCEPTED = 1
+    ON_THE_WAY = 2
+    ARRIVED = 3
+    DELIVERED = 4
 
 
 class ShippingAddress(db.Model):
     __tablename__ = "shipping_addresses"
 
     id = db.Column(db.Integer, primary_key=True)
-    office_id = db.Column(db.Integer, db.ForeignKey("offices.id"))
+    office_id = db.Column(db.Integer, db.ForeignKey("offices.id",  ondelete="SET NULL"))
     address = db.Column(db.String(200))
 
     office = db.relationship(Office, foreign_keys=office_id, lazy="joined")
@@ -170,13 +191,13 @@ class Shipment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     weight = db.Column(db.Float, nullable=False)
-    status = db.Column(db.Enum(ShippingStatus), nullable=False, default=ShippingStatus.SHIPPED)
-    from_address_id = db.Column(db.Integer, db.ForeignKey("shipping_addresses.id"), nullable=False, unique=True)
-    to_address_id = db.Column(db.Integer, db.ForeignKey("shipping_addresses.id"), nullable=False, unique=True)
+    status = db.Column(db.Enum(ShippingStatus), nullable=False, default=ShippingStatus.ACCEPTED)
+    from_address_id = db.Column(db.Integer, db.ForeignKey("shipping_addresses.id"), nullable=False)
+    to_address_id = db.Column(db.Integer, db.ForeignKey("shipping_addresses.id"), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    acceptor_id = db.Column(db.Integer, db.ForeignKey("employees.id"))
-    deliverer_id = db.Column(db.Integer, db.ForeignKey("employees.id"))
+    acceptor_id = db.Column(db.Integer, db.ForeignKey("employees.id", ondelete="SET NULL"))
+    deliverer_id = db.Column(db.Integer, db.ForeignKey("employees.id", ondelete="SET NULL"))
 
     from_address = db.relationship(ShippingAddress, foreign_keys=from_address_id, uselist=False, lazy="select")
     to_address = db.relationship(ShippingAddress, foreign_keys=to_address_id, uselist=False, lazy="select")

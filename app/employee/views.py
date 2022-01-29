@@ -2,7 +2,7 @@ from flask import Blueprint, redirect, render_template, flash, url_for
 
 from app.employee.forms import EmployeeForm
 
-from app.auth.util import login_required, role_required
+from app.auth.util import login_required, role_required, current_user
 from app.common.util import persist_model, delete_model, commit_db_transaction, find_user_by_email
 from app.employee.util import find_employee_by_id, find_all_active_shipments_by_employee
 from app.office.util import find_office_by_id
@@ -105,6 +105,10 @@ def update(id):
 @role_required(Role.ADMIN)
 def delete(id):
     employee = find_employee_by_id(id)
+    
+    if current_user.id == employee.id:
+        flash("You cannot delete yourself")
+        return redirect(url_for("employee.show"))
 
     if employee:
         active_shipments = find_all_active_shipments_by_employee(employee)

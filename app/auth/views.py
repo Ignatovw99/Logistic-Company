@@ -29,7 +29,7 @@ def register():
             flash("This email is already taken")
         else:
             user = User(email = email, first_name = first_name, last_name = last_name, address = address, phone_number = phone_number, password = password)
-            user.add_role(Role.CLIENT)
+            user.add_role(Role.CUSTOMER)
             persist_model(user)
             flash("Sucessful registration")
             return redirect(url_for("auth.login"))

@@ -33,10 +33,12 @@ def initialize_app_modules(app):
         from app.common.commands import commands
         from app.office.views import office
         from app.employee.views import employee
+        from app.shipment.views import shipment
 
         app.register_blueprint(auth)
         app.register_blueprint(main)
         app.register_blueprint(commands)
         app.register_blueprint(office, url_prefix="/offices")
         app.register_blueprint(employee, url_prefix="/employees")
+        app.register_blueprint(shipment, url_prefix="/shipments")
         

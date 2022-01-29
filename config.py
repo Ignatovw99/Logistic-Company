@@ -13,6 +13,10 @@ class Config():
 
     SECRET_KEY = "0bc71b528deccf5539be21de6be4d3de241c593cd5caa7403082d7fc72fcbce4"
 
+    PRICE_PER_KG = 2
+    PRICE_SHIPMENT_FROM_ADDRESS = 8
+    PRICE_SHIPMENT_TO_ADDRESS = 5
+
 
 class DevelopmentConfig(Config):
     DEBUG = True

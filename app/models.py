@@ -97,7 +97,7 @@ class User(db.Model):
 
 
 class Role(enum.Enum):
-    CLIENT = 1
+    CUSTOMER = 1
     EMPLOYEE = 2
     ADMIN = 3
     ROOT = 4
@@ -172,10 +172,12 @@ class Office(db.Model):
 
 class ShippingStatus(enum.Enum):
     ACCEPTED = 1
-    READY_TO_SHIP = 2
-    ON_THE_WAY = 3
-    ARRIVED = 4
-    DELIVERED = 5
+    READY_TO_PACK = 2
+    READY_TO_SHIP = 3
+    ON_ITS_WAY = 4
+    ARRIVED = 5
+    TRAVELING_TO_YOUR_ADDRESS = 6
+    DELIVERED = 7
 
 
 class ShippingAddress(db.Model):
@@ -205,6 +207,7 @@ class Shipment(db.Model):
     sender_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     acceptor_id = db.Column(db.Integer, db.ForeignKey("employees.id", ondelete="SET NULL"))
+    transported_by_id = db.Column(db.Integer, db.ForeignKey("employees.id", ondelete="SET NULL"))
     deliverer_id = db.Column(db.Integer, db.ForeignKey("employees.id", ondelete="SET NULL"))
 
     from_address = db.relationship(ShippingAddress, foreign_keys=from_address_id, uselist=False, lazy="select")
@@ -212,6 +215,7 @@ class Shipment(db.Model):
     sender = db.relationship(User, foreign_keys=sender_id, lazy="select")
     receiver = db.relationship(User, foreign_keys=receiver_id, lazy="select")
     acceptor = db.relationship(Employee, foreign_keys=acceptor_id, lazy="select")
+    transported_by = db.relationship(Employee, foreign_keys=transported_by_id, lazy="select")
     deliverer = db.relationship(Employee, foreign_keys=deliverer_id, lazy="select")
 
     def __repr__(self):

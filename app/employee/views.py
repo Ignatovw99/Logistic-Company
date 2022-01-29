@@ -36,7 +36,7 @@ def create():
             email, first_name, last_name, address, phone_number, is_admin, is_courier, office_id, password = form.get_data()
 
             user = User(email=email, first_name=first_name, last_name=last_name, address=address, phone_number=phone_number, password=password)
-            user.add_role(Role.CLIENT)
+            user.add_role(Role.CUSTOMER)
             user.add_role(Role.EMPLOYEE)
 
             if is_admin:

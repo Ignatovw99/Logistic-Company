@@ -23,7 +23,7 @@ def add_sys_admin(email, password, first_name, last_name, phone_number):
         return
     
     root = models.User(email=email, password=password, first_name=first_name, last_name=last_name, phone_number=phone_number)
-    root.add_role(models.Role.CLIENT)
+    root.add_role(models.Role.CUSTOMER)
     root.add_role(models.Role.EMPLOYEE)
     root.add_role(models.Role.ADMIN)
     root.add_role(models.Role.ROOT)

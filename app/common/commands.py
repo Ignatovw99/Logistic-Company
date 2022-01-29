@@ -110,20 +110,16 @@ def seed_database():
         shipments = []
 
         for i in range(9):
-            from_office = None
-            to_office = offices[i]
+            from_office = offices[i]
+            to_office = offices[i + 1]
             from_address = fake.address()
-            to_address = None
-            if i % 2 == 0:
-                from_office = offices[i]
-                from_address = None
-                to_office = None
-                to_address = fake.address()
+            to_address = fake.address()
             
             from_address = models.ShippingAddress(office=from_office, address=from_address)
             to_address = models.ShippingAddress(office=to_office, address=to_address)
 
             shipment = models.Shipment(weight=abs(fake.pyfloat()),
+                                       price=abs(fake.pyfloat()),
                                        from_address=from_address,
                                        to_address=to_address,
                                        sender=users[i],

@@ -13,7 +13,7 @@ class EmployeeForm(FlaskForm):
     password = PasswordField('Password', validators = [DataRequired(), Regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$", message="Password should be eight characters, at least one uppercase letter, one lowercase letter and one number")])
     is_admin = BooleanField("Admin?")
     is_courier = BooleanField("Courier?")
-    office = SelectField("Office", coerce=int)
+    office_id = SelectField("Office", coerce=int)
 
     def remove_password_required_validator(self):
         self.password.validators = [Regexp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$", message="Password should be eight characters, at least one uppercase letter, one lowercase letter and one number")]
@@ -27,7 +27,7 @@ class EmployeeForm(FlaskForm):
         self.address.data = employee_user.address
         self.is_admin.data = employee_user.has_role(Role.ADMIN)
         self.is_courier.data = employee.office_id is not None
-        self.office.data = employee.office_id
+        self.office_id.data = employee.office_id
 
     def get_data(self):
         return (
@@ -38,6 +38,6 @@ class EmployeeForm(FlaskForm):
             self.phone_number.data,
             self.is_admin.data,
             self.is_courier.data,
-            self.office.data,
+            self.office_id.data,
             self.password.data
         )

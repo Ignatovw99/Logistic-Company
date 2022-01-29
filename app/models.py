@@ -3,6 +3,8 @@ from secrets import token_urlsafe
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import backref
 
+from datetime import date
+
 import enum
 
 
@@ -149,6 +151,8 @@ class Employee(db.Model):
 
     user = db.relationship(User, foreign_keys=id, lazy="joined")
 
+    def is_courier(self):
+        return self.office_id is None
 
     def __repr__(self):
         return f"Employee(first_name={self.user.first_name}, last_name={self.user.last_name}, office_id={self.office_id})"
@@ -168,16 +172,17 @@ class Office(db.Model):
 
 class ShippingStatus(enum.Enum):
     ACCEPTED = 1
-    ON_THE_WAY = 2
-    ARRIVED = 3
-    DELIVERED = 4
+    READY_TO_SHIP = 2
+    ON_THE_WAY = 3
+    ARRIVED = 4
+    DELIVERED = 5
 
 
 class ShippingAddress(db.Model):
     __tablename__ = "shipping_addresses"
 
     id = db.Column(db.Integer, primary_key=True)
-    office_id = db.Column(db.Integer, db.ForeignKey("offices.id",  ondelete="SET NULL"))
+    office_id = db.Column(db.Integer, db.ForeignKey("offices.id",  ondelete="CASCADE"), nullable=False)
     address = db.Column(db.String(200))
 
     office = db.relationship(Office, foreign_keys=office_id, lazy="joined")
@@ -191,9 +196,12 @@ class Shipment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     weight = db.Column(db.Float, nullable=False)
+    price = db.Column(db.Float, nullable=False)
     status = db.Column(db.Enum(ShippingStatus), nullable=False, default=ShippingStatus.ACCEPTED)
-    from_address_id = db.Column(db.Integer, db.ForeignKey("shipping_addresses.id"), nullable=False)
-    to_address_id = db.Column(db.Integer, db.ForeignKey("shipping_addresses.id"), nullable=False)
+    sent_date = db.Column(db.Date, nullable=False, default=date.today())
+    delivery_date = db.Column(db.Date)
+    from_address_id = db.Column(db.Integer, db.ForeignKey("shipping_addresses.id", ondelete="CASCADE"), nullable=False)
+    to_address_id = db.Column(db.Integer, db.ForeignKey("shipping_addresses.id", ondelete="CASCADE"), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     acceptor_id = db.Column(db.Integer, db.ForeignKey("employees.id", ondelete="SET NULL"))

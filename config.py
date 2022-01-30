@@ -16,7 +16,8 @@ class Config():
     PRICE_PER_KG = 2
     PRICE_SHIPMENT_FROM_ADDRESS = 8
     PRICE_SHIPMENT_TO_ADDRESS = 5
-
+    PRICE_EXPRESS_OFFICE = 20
+    PRICE_EXPRESS_ADDRESS = 35
 
 class DevelopmentConfig(Config):
     DEBUG = True

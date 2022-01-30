@@ -25,7 +25,7 @@ def show():
     render_template("shipment/all.html", title="Shipments", shipments=shipments)
 
 
-@shipment.route("/create")
+@shipment.route("/create", methods=["GET", "POST"])
 @login_required
 @role_required(Role.EMPLOYEE)
 def create():
@@ -34,6 +34,8 @@ def create():
     current_employee = find_employee_by_id(current_user.id)
 
     if form.validate_on_submit():
+        shipment = Shipment(weight=form.weight.data, acceptor=current_employee)
+
         users_valid = True
         sender = find_user_by_email(form.sender.data)
         if not sender:
@@ -46,29 +48,40 @@ def create():
             flash("Sender does not exists")
 
         if users_valid:
+            shipment.sender = sender
+            shipment.receiver = receiver
+
+            delivery_office = find_office_by_id(form.delivery_office_id.data)
+            delivery_address = form.delivery_address.data
+            to_shipping_address = ShippingAddress(address=delivery_address, office=delivery_office)
+            shipment.to_address = to_shipping_address
+            is_express = False
+
             if current_employee.is_courier():
                 sender_address = form.sender_address.data
                 sender_office = find_office_by_id(form.sender_office.data)
                 from_shipping_address = ShippingAddress(address=sender_address, office=sender_office)
-                status = ShippingStatus.ACCEPTED
+                shipment.from_address = from_shipping_address
+
+                is_express = form.is_express.data
+                if is_express:
+                    shipment.transported_by = current_employee
+                    if delivery_address:
+                        status = ShippingStatus.TRAVELING_TO_YOUR_ADDRESS
+                        shipment.deliverer = current_employee
+                    else:
+                        status = ShippingStatus.ON_ITS_WAY
+                else:
+                    status = ShippingStatus.ACCEPTED
             else:
                 from_shipping_address = ShippingAddress(office=current_employee.office)
                 status = ShippingStatus.READY_TO_SHIP
 
-            delivery_office = find_office_by_id(form.delivery_office_id.data)
-            to_shipping_address = ShippingAddress(address=form.delivery_address.data, office=delivery_office)
+            shipment.status = status
 
             if are_sender_and_delivery_addresses_different(from_shipping_address, to_shipping_address):
-                shipment = Shipment(
-                    weight=form.weight.data,
-                    status=status,
-                    from_address=from_shipping_address,
-                    to_address=to_shipping_address, 
-                    acceptor=current_employee,
-                    sender=sender,
-                    receiver=receiver)
 
-                shipment.price = calculate_shipment_price(shipment)
+                shipment.price = calculate_shipment_price(shipment, is_express)
 
                 persist_model(from_shipping_address, commit_transaction=False)
                 persist_model(to_shipping_address, commit_transaction=False)
@@ -81,7 +94,7 @@ def create():
     form.delivery_office_id.choices = office_choices
 
     if current_employee.is_courier():
-        form.append_sender_office_field()
+        form.append_courier_fields()
         form.sender_office_id.data = office_choices
     
     return render_template("shipment/create.html", title="Shipment create", form=form)

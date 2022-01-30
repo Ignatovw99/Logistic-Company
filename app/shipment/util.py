@@ -14,12 +14,15 @@ def are_sender_and_delivery_addresses_different(sender_address, delivery_address
     return True
 
 
-def calculate_shipment_price(shipment):
+def calculate_shipment_price(shipment, is_express):
     price = shipment.weight * current_app.config["PRICE_PER_KG"]
     if shipment.from_address.address:
         price = price + current_app.config["PRICE_SHIPMENT_FROM_ADDRESS"]
     if shipment.to_address.address:
         price = price + current_app.config["PRICE_SHIPMENT_TO_ADDRESS"]
+    if is_express:
+        express_price = current_app.config["PRICE_EXPRESS_ADDRESS"] if shipment.to_address.address else current_app.config["PRICE_EXPRESS_OFFICE"]
+        price = price + express_price
     return price
 
 

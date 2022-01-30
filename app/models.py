@@ -152,7 +152,7 @@ class Employee(db.Model):
     user = db.relationship(User, foreign_keys=id, lazy="joined")
 
     def is_courier(self):
-        return self.office_id is None
+        return self.office_id is None or self.user.has_role(Role.ROOT)
 
     def __repr__(self):
         return f"Employee(first_name={self.user.first_name}, last_name={self.user.last_name}, office_id={self.office_id})"
@@ -217,6 +217,23 @@ class Shipment(db.Model):
     acceptor = db.relationship(Employee, foreign_keys=acceptor_id, lazy="select")
     transported_by = db.relationship(Employee, foreign_keys=transported_by_id, lazy="select")
     deliverer = db.relationship(Employee, foreign_keys=deliverer_id, lazy="select")
+
+
+    def get_location(self):
+        if self.status == ShippingStatus.ACCEPTED:
+            location = "Traveling to the office for packing"
+        elif self.status == ShippingStatus.READY_TO_PACK or self.status == ShippingStatus.READY_TO_SHIP:
+            location = "Office: " + str(self.from_address.office.address)
+        elif self.status == ShippingStatus.ON_ITS_WAY:
+            location = "Traveling to delivery destination"
+        elif self.status == ShippingStatus.ARRIVED:
+            location = "Office: " + str(self.to_address.office.address)
+        elif self.status == ShippingStatus.TRAVELING_TO_YOUR_ADDRESS:
+            location = "Close to you"
+        else:
+            location = ""
+
+        return location
 
     def __repr__(self):
         return f"Shipment(weight={self.weight}, status={self.status})"

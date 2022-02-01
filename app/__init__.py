@@ -34,6 +34,7 @@ def initialize_app_modules(app):
         from app.office.views import office
         from app.employee.views import employee
         from app.shipment.views import shipment
+        from app.delivery.routes import delivery
 
         app.register_blueprint(auth)
         app.register_blueprint(main)
@@ -41,4 +42,5 @@ def initialize_app_modules(app):
         app.register_blueprint(office, url_prefix="/offices")
         app.register_blueprint(employee, url_prefix="/employees")
         app.register_blueprint(shipment, url_prefix="/shipments")
+        app.register_blueprint(delivery, url_prefix="/delivery")
         

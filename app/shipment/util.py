@@ -60,7 +60,7 @@ def find_shipments_to_deliver_from_office():
 
 def find_shipments_to_deliver_to_customer(employee_id):
     return Shipment.query.\
-            filter(Shipment.deliverer_id == employee_id) & (Shipment.status == ShippingStatus.TRAVELING_TO_YOUR_ADDRESS).\
+            filter((Shipment.deliverer_id == employee_id) & (Shipment.status == ShippingStatus.TRAVELING_TO_YOUR_ADDRESS)).\
             order_by(Shipment.sent_date.asc()).\
             all()
 

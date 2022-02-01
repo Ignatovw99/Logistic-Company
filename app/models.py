@@ -229,7 +229,7 @@ class Shipment(db.Model):
         elif self.status == ShippingStatus.ARRIVED:
             location = "Office: " + str(self.to_address.office.address)
         elif self.status == ShippingStatus.TRAVELING_TO_YOUR_ADDRESS:
-            location = "Close to you"
+            location = "Close to the delivery address"
         else:
             location = ""
 

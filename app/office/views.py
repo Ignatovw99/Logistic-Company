@@ -15,7 +15,7 @@ office = Blueprint("office", __name__)
 @role_required(Role.EMPLOYEE)
 def show():
     offices = Office.query.all()
-    return render_template("office/all.html", title="Offices", offices=offices)
+    return render_template("office/all.html", offices=offices)
 
 
 @office.route("/create", methods=["GET", "POST"])

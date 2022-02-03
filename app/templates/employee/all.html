@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+
+{% block title %}- Employees{% endblock %}
+
+{% block content %}
+    <section class="profile">
+        {% include 'sidebar.html' %}
+
+        <table class="profile__table">
+            <tr class = "tbhead">
+                <th>No.</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Office address</th>
+                <th>System role</th>
+                {% if current_user.has_role(Role.ADMIN) %}
+                    <th></th>
+                    <th></th>
+                {% endif %}
+            </tr>
+            {% for employee in employees %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ employee.user.email }}</td>
+                <td>{{ 'Courier' if employee.is_courier() else 'Office-employee' }}</td>
+                <td>{{ employee.office.address if employee.office else '-' }}</td>
+                <td>{{ employee.user.find_highest_role().name }}</td>
+                {% if current_user.has_role(Role.ADMIN) %}
+                    <td>
+                        <a href="{{ url_for('employee.update', id=employee.id) }}" class ="addButton">Update</a>
+                    </td>
+                {% endif %}
+                {% if not employee.user.has_role(Role.ROOT) %}
+                    <td>
+                        <a href="{{ url_for('employee.delete', id=employee.id) }}" class ="removeButton">Remove</a>
+                    </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+        
+
+    </section>
+{% endblock %}

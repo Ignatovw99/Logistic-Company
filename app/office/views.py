@@ -72,7 +72,7 @@ def delete(id):
     office = find_office_by_id(id)
 
     if office:
-        #Deleting an office means that all employees who work in that office become couriers and all shipping addreses related to this office should be invaldiated.
+        #Deleting an office means that all employees who work in that office become couriers and all delivered shipments related to this office should be deleted
         active_shippments = find_all_active_shipments_by_office(office)
         if active_shippments:
             flash("You cannot delete this office because there are still some shipments to process", "danger")

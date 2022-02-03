@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block title %}- Offices{% endblock %}
+
+{% block content %}
+    <section class="profile">
+        {% include 'sidebar.html' %}
+
+        <table class="profile__table">
+            <tr class = "tbhead">
+                <th>No.</th>
+                <th>Address</th>
+                <th>Employees count</th>
+                {% if current_user.has_role(Role.ADMIN) %}
+                    <th></th>
+                {% endif %}
+            </tr>
+            {% for office in offices %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ office.address }}</td>
+                <td>{{ office.employees | length }}</td>
+                {% if current_user.has_role(Role.ADMIN) %}
+                    <td>
+                        <a href="{{ url_for('office.update', id=office.id) }}" class ="addButton">Update</a>
+                        <a href="{{ url_for('office.delete', id=office.id) }}" class ="removeButton">Remove</a>
+                    </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+    </section>
+{% endblock %}

@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, url_for, flash
+from flask import Blueprint, redirect, render_template, url_for, flash, request
 
 from app.models import Office, Role
 from app.auth.util import login_required, role_required
@@ -30,12 +30,12 @@ def create():
         if is_address_available(address):
             office = Office(address=address)
             persist_model(office)
-            flash("Office created successfully")
+            flash("Office created successfully", "success")
             return redirect(url_for("office.show"))
         else:
-            flash("There is already an office at this address")
+            flash("There is already an office at this address", "danger")
         
-    return render_template("office/create.html", title="Office create", form=form)
+    return render_template("office/create.html", form=form)
 
 
 @office.route("/update/<id>", methods=["GET", "POST"])
@@ -45,24 +45,24 @@ def update(id):
     office = find_office_by_id(id)
 
     if not office:
-        flash("Office does not exist")
+        flash("Office does not exist", "danger")
         return redirect(url_for("office.show"))
 
     form = OfficeForm()
-
+    if request.method == "GET":
+        form.address.data = office.address
+    
     if form.validate_on_submit():
         address = form.address.data
-        if is_address_available(address):
+        if is_address_available(address) or office.address == address:
             office.address = address
-            commit_db_transaction(office)
-            flash("Office updated successfully")
+            commit_db_transaction()
+            flash("Office updated successfully", "success")
             return redirect(url_for("office.show"))
         else:
-            flash("There is already an office at this address", "error")
-            return render_template("office/update.html", title="Office update", form=form)
-
-    form.address.data = office.address
-    return render_template("office/update.html", title="Office update", form=form)
+            flash("There is already an office at this address", "danger")
+    
+    return render_template("office/update.html", form=form, office_id=office.id)
 
 
 @office.route("/delete/<id>")
@@ -75,11 +75,11 @@ def delete(id):
         #Deleting an office means that all employees who work in that office become couriers and all shipping addreses related to this office should be invaldiated.
         active_shippments = find_all_active_shipments_by_office(office)
         if active_shippments:
-            flash("You cannot delete this office because there are still some shipments to process")
+            flash("You cannot delete this office because there are still some shipments to process", "danger")
         else:
             delete_model(office)
-            flash("Office deleted successfully")
+            flash("Office deleted successfully", "success")
     else:
-        flash("Office does not exist")
+        flash("Office does not exist", "danger")
 
     return redirect(url_for("office.show"))

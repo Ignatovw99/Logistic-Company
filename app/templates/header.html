@@ -1,24 +1,28 @@
-{% extends 'base.html' %}
- 
- 
- 
-{% block title %} Logistic Company {% endblock %}
- 
- 
- 
-{% block body %}
- 
-<div class="jumbotron p-3">
-    <div class="well text-center">
- 
-        <h1>Logistic Company </h1>
- 
-    </div>
- 
- 
-</div>
- 
- 
-{% endblock %}
+<header class="header">
+    <div class ="overlay has-fade"></div>
 
- 
+    <nav class="flex container container--paddingAll flex-jc-sb flex-ai-c">
+        <h1 class = "header__logo">CSCB532</h1>
+
+        <a id= "btnHamburger" href="#" class = "header__toggle hide-for-desktop" >
+            <span></span>
+            <span></span>
+            <span></span>
+        </a>
+
+        <div class="header__links hide-for-mobile">
+            <a href="index.html">Home</a>
+            <a href="#">My profile</a>
+            <a href="#">Delivery</a>
+        </div>
+
+        <a href="#" class = "button t hide-for-mobile">Sing up / Log in</a>
+    </nav>
+
+    <div class="header__menu has-fade">
+        <a href="" class="button ">Sing in/Log in</a>
+        <a href="" class="pages">Home</a>
+        <a href="" class="pages">About us</a>
+        <a href="" class="pages">Delivery</a>
+    </div>
+</header>

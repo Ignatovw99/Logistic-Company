@@ -1,0 +1,11 @@
+<div class="profile__menu">
+    <a href="#">Tracking</a>
+    <a href="#">Packages</a>
+    {% if current_user.has_role(Role.EMPLOYEE) %}
+        <a href="#">Employees</a>
+    {% endif %}
+    {% if current_user.has_role(Role.EMPLOYEE) %}
+        <a href="#">Offices</a>
+    {% endif %}
+    <a href="#">Settings</a>
+</div>

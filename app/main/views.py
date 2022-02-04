@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app as app, render_template, jsonify, request, flash, redirect, url_for, Response
 from app import db
 from app import auth
-from app.auth.util import current_user, role_required
+from app.auth.util import current_user, anonymous_required, role_required
 from app.models import User, Role, Office, ShippingStatus, Shipment, ShippingAddress, Employee
 
 from sqlalchemy import exists, or_, and_
@@ -13,13 +13,10 @@ main = Blueprint("main", __name__)
 
 
 @main.route("/")
+@main.route("/index")
+@anonymous_required
 def index():
     return render_template("main/index.html")
-
-
-@main.route("/profile")
-def profile():
-    return render_template("main/profile.html")
 
 
 @main.route('/client_shipments/')
@@ -359,137 +356,6 @@ def delete_shipping(id):
     flash("Shipment Deleted Successfully")
 
     return redirect(url_for('main.shipment'))
-
-
-
-# @main.route('/offices')
-# def Offices():
-#     all_data = Office.query.all()
-
-#     return render_template("main/prototype/offices.html", offices=all_data)
-
-
-
-# @main.route('/offices/insert', methods=['POST'])
-# def insert_office():
-#     if request.method == 'POST':
-#         office_name = request.form['officename']
-#         office_address = request.form['officeaddress']
-
-#         office_data = Office(office_address)
-#         db.session.add(office_data)
-#         db.session.commit()
-
-#         flash("Office Inserted Successfully")
-
-#         return redirect(url_for('main.Offices'))
-
-
-
-# @main.route('/offices/update', methods=['GET', 'POST'])
-# def update_office():
-#     if request.method == 'POST':
-#         office_data = Office.query.get(request.form.get('id'))
-#         office_data.name = request.form['officename']
-#         office_data.address = request.form['officeaddress']
-
-#         db.session.commit()
-#         flash("Office Updated Successfully")
-
-#         return redirect(url_for('main.Offices'))
-
-
-
-# @main.route('/offices/delete/<id>/', methods=['GET', 'POST'])
-# def delete_office(id):
-#     office_data = Office.query.get(id)
-
-#     db.session.delete(office_data)
-#     db.session.commit()
-#     flash("Office Deleted Successfully")
-
-#     return redirect(url_for('main.Offices'))
-
-
-# @main.route('/employees')
-# def Employees():
-#     employees_data =Employee.query.all()
-
-
-#     return render_template("main/prototype/employees.html", employees=employees_data)
-
-
-# @main.route('/employees/insert', methods=['POST'])
-# def insert_employee():
-#     if request.method == 'POST':
-#         first_name = request.form['firstname']
-#         last_name = request.form['lastname']
-#         address = request.form['address']
-#         email = request.form['email']
-#         phone = request.form['phone']
-#         password = request.form['password']
-#         office_id = request.form['officeid']
-
-#         exists = db.session.query(Office.id).filter_by(id=office_id).first()
-#         if exists is not None:
-#              user_data = User(first_name, last_name, address, phone, email, password)
-#              db.session.add(user_data)
-#              db.session.commit()
-#              employee_data = Employee(user_data.id, office_id)
-#              db.session.add(employee_data)
-#              db.session.commit()
-
-#         else:
-#             flash("This office ID does not exist. Try again.", 'error')
-
-#         return redirect(url_for('main.Employees'))
-
-
-
-# @main.route('/employees/update', methods=['GET', 'POST'])
-# def update_employee():
-#     if request.method == 'POST':
-#         employee_data = Employee.query.get(request.form.get('id'))
-
-#         employee_data.user.first_name = request.form['firstname']
-#         employee_data.user.last_name = request.form['lastname']
-#         employee_data.user.address = request.form['address']
-#         employee_data.user.phone_number = request.form['phone']
-#         employee_data.user.email = request.form['email']
-#         employee_data.user.password = request.form['password']
-#         employee_data.office_id = request.form['officeid']
-
-#         db.session.commit()
-#         flash("Employee Updated Successfully")
-
-#         return redirect(url_for('main.Employees'))
-
-
-# @main.route('/employees/delete/<id>/', methods=['GET', 'POST'])
-# def delete_employee(id):
-#     employee_data = Employee.query.get(id)
-#     user_data = User.query.get(id)
-#     db.session.delete(employee_data)
-#     db.session.delete(user_data)
-#     db.session.commit()
-
-#     flash("Employee Deleted Successfully")
-
-#     return redirect(url_for('main.Employees'))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # ------------------------------R e p o r t s----------------------------------------------------------
 

@@ -1,94 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{ url_for('static', filename='scssAndJs/scss/style.css') }}">
-        <!-- Index не е говорящо. - Ани -->
-        <title>Home</title>
-    </head>
-    <body>
-        <header class="header">
-            <div class ="overlay has-fade"></div>
+{% extends 'layout.html' %}
 
-            <nav class="flex container container--paddingAll flex-jc-sb flex-ai-c">
-                <h1 class = "header__logo">CSCB532</h1>
+{% block content %}
 
-                <a id= "btnHamburger" href="#" class = "header__toggle hide-for-desktop" >
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </a>
+<section class="hero">
+    <div class ="hero__image">
 
-                <div class="header__links hide-for-mobile">
-                    <a href="index.html">Home</a>
-                    <a href="profile.html">My profile</a>
-                    <a href="#">Delivery</a>
-                </div>
+    </div>
+    
+    <div class="hero__text container--paddingAll">
+        <h2>New generation of trading, 
+            transporting and selling your belongings!</h2>
+            <p>Make your first shipment on us.</p>
+            <a href="{{url_for('shipment.show')}}" class ="button">Shipment</a>
+    </div>
+</section>
 
-                <a href="#" class = "button t hide-for-mobile">Sing up / Log in</a>
-            </nav>
-
-            <div class="header__menu has-fade">
-                <a href="" class="button ">Sing in/Log in</a>
-                <a href="" class="pages">Home</a>
-                <a href="" class="pages">About us</a>
-                <a href="" class="pages">Delivery</a>
-            </div>
-        </header>
-
-        <section class="hero">
-            <div class ="hero__image">
-
-            </div>
-            
-            <div class="hero__text container--paddingAll">
-                <h2>New generation of trading, 
-                    transporting and selling your belongings!</h2>
-                    <p>Make your first shipment on us.</p>
-                    <a href="#" class ="button">Shipment</a>
-            </div>
-        </section>
-
-
-
-        <footer class="footer">
-
-
-            <h1 class = "footer__logo">CSCB532</h1>
-
-
-            <div class="footer__social">
-                <a href="#">
-                    <img src="{{ url_for('static', filename='images/logo-facebookpng-32255.png') }}" alt="Facebook">
-                </a>
-                <a href="#">
-                    <img src="{{ url_for('static', filename='images/logo-ig-png-32457.png') }}" alt="Instagram">
-                </a>
-                <a href="#">
-                    <img src="{{ url_for('static', filename='images/logo-twitter-png-40407.png') }}" alt="Twitter">
-                </a>
-            </div>
-
-            <div class="footer__links">
-                <a href="#">Funds</a>
-                <a href="#">Support</a>
-                <a href="#">Privacy Policy</a>
-            </div>
-
-            <div class="footer__cta">
-                <a href="#" class="button">Sing up/Log in</a>
-               
-            </div>
-
-            <div class="footer__copyright">
-                &copy; CSCB532.All Rigths Reserved.
-            </div>
-
-
-        </footer>
-
-        <script src = "{{ url_for('static', filename='scssAndJs/js/script.js') }}"></script>
-    </body>
-</html>
+{% endblock %}

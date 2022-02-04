@@ -51,7 +51,7 @@ def find_shipments_to_deliver_from_office():
     return Shipment.query.\
             filter(Shipment.status == ShippingStatus.ARRIVED).\
             join(delivery_address_alias, Shipment.to_address).\
-            filter(delivery_address_alias.address != None).\
+            filter((delivery_address_alias.address != None) | (delivery_address_alias.address != "")).\
             order_by(Shipment.sent_date.asc()).\
             all()
 

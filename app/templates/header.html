@@ -20,22 +20,24 @@
         </div>
 
         {% if current_user.is_anonymous() %}
-            <div>
-                <a href="{{url_for('auth.register')}}" class = "button t hide-for-mobile">Sing up</a>
-                <a href="{{url_for('auth.login')}}" class = "button t hide-for-mobile">Login</a>
-            </div>
+            <a href="{{url_for('auth.register')}}" class = "button t hide-for-mobile">Register</a>
+            <a href="{{url_for('auth.login')}}" class = "button t hide-for-mobile">Login</a>
         {% else %}
             <div>
-                <span>Hello, {{ current_user.email }}, role: {{ current_user.find_highest_role().name }}</span>
+                <span>Hello, {{ current_user.email }}, your Role: {{ current_user.find_highest_role().name }}</span>
                 <a href="{{url_for('auth.logout')}}" class = "button t hide-for-mobile">Logout</a>
             </div>
         {% endif %}
     </nav>
 
     <div class="header__menu has-fade">
-        <a href="" class="button ">Sing in/Log in</a>
-        <a href="" class="pages">Home</a>
-        <a href="" class="pages">About us</a>
-        <a href="" class="pages">Delivery</a>
+        {% if current_user.is_anonymous() %}
+            <a href="{{url_for('main.index')}}">Home</a>
+            <a href="{{url_for('auth.register')}}" class = "button t hide-for-mobile">Register</a>
+            <a href="{{url_for('auth.login')}}" class = "button t hide-for-mobile">Login</a>
+        {% else %}
+            <a href="{{url_for('auth.logout')}}" class = "button t hide-for-mobile">Logout</a>
+            <a href="{{url_for('shipment.show')}}">Shipments</a>
+        {% endif %}
     </div>
 </header>

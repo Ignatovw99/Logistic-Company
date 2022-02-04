@@ -1,0 +1,84 @@
+{% extends 'layout.html' %}
+
+{% block title %}- Shipments{% endblock %}
+
+{% block content %}
+    <div style="margin-left: 43.5%;">
+        <a href="#" class="btn btn-primary">Add shipment</a>
+    </div>
+    <section class="profile">
+        {% include 'sidebar.html' %}
+        <table class="profile__table" style="margin-top: 3%; margin-bottom: 3%; margin-left: 1%;">
+            <tr class = "tbhead">
+                <th>ID</th>
+                <th>Status</th>
+                <th>Sent date</th>
+                {% if current_user.has_role(Role.EMPLOYEE) %}
+                    <th>Acceptor</th>
+                    <th>Transported by</th>
+                    <th>Deliverer</th>
+                    <th></th>
+                {% else %}
+                    <th>Weight</th>
+                    <th>Price</th>
+                    <th>Location</th>
+                    <th>Sender</th>
+                    <th>Receiver</th>
+                {% endif %}
+            </tr>
+            {% for shipment in shipments %}
+            <tr>
+                <td>{{ shipment.id }}</td>
+                <td>{{ shipment.status.name }}</td>
+                <td>{{ shipment.sent_date }}</td>
+                {% if current_user.has_role(Role.EMPLOYEE) %}
+                    <td>{{ shipment.acceptor.user.email }}</td>
+                    <td>{{ shipment.transported_by.user.email if shipment.transported_by else '' }}</td>
+                    <td>{{ shipment.deliverer.user.email if shipment.deliverer else '' }}</td>
+
+                    {% if shipment.status == ShippingStatus.ACCEPTED and current_employee.is_courier() and shipment.acceptor == current_employee %}
+                        <td>
+                            <a href="{{ url_for('delivery.send_for_packing', shipment_id=shipment.id) }}" class="btn btn-primary">Send for pack</a>
+                        </td>
+                    {% elif shipment.status == ShippingStatus.READY_TO_PACK and current_employee.office == shipment.from_address.office %}
+                        <td>
+                            <a href="{{ url_for('delivery.pack', shipment_id=shipment.id) }}" class="btn btn-secondary">Pack</a>
+                        </td>
+                    {% elif shipment.status == ShippingStatus.READY_TO_SHIP and current_employee.is_courier() %}
+                        <td>
+                            <a href="{{ url_for('delivery.load', shipment_id=shipment.id) }}" class="btn btn-success">Load</a>
+                        </td>
+                    {% elif shipment.status == ShippingStatus.ON_ITS_WAY and shipment.transported_by == current_employee %}
+                        <td>
+                            <a href="{{ url_for('delivery.transport', shipment_id=shipment.id) }}" class="btn btn-warning">Transport</a>
+                        </td>
+                    {% elif shipment.status == ShippingStatus.ARRIVED and current_employee.is_courier() and shipment.to_address.address %}
+                        <td>
+                            <a href="{{ url_for('delivery.send_to_address', shipment_id=shipment.id) }}" class="btn btn-info">Send to address</a>
+                        </td>
+                    {% elif shipment.status == ShippingStatus.ARRIVED and not current_employee.is_courier() %}
+                        <td>
+                            <a href="{{ url_for('delivery.deliver_shipment', shipment_id=shipment.id) }}" class="btn btn-danger">Deliver</a>
+                        </td>
+                    {% elif shipment.status == ShippingStatus.TRAVELING_TO_YOUR_ADDRESS and shipment.deliverer == current_employee %}
+                        <td>
+                            <a href="{{ url_for('delivery.deliver_shipment', shipment_id=shipment.id) }}" class="btn btn-danger">Deliver</a>
+                        </td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+
+                {% else %}
+                    <td>{{ shipment.weight }}</td>
+                    <td>{{ shipment.price }}</td>
+                    <td>{{ shipment.get_location() }}</td>
+                    <td>{{ shipment.sender.email }}</td>
+                    <td>{{ shipment.receiver.email }}</td>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </table>
+        
+
+    </section>
+{% endblock %}

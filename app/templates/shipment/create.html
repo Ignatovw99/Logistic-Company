@@ -1,0 +1,135 @@
+{% extends 'layout.html' %}
+
+{% block title %}- Add a new shipment{% endblock %}
+
+{% block content %}
+
+<h3 class="text-center" style="margin: 3%">Add new Shipment</h3>
+
+<div class="justify-content-center" style="margin-left: 25%; margin-bottom: 10%;">
+    <div class="col-8">
+        <form method="POST", action="{{ url_for("shipment.create") }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.sender.label(class="form-control-label") }}
+                {% if form.sender.errors %}
+                    {{ form.sender(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.sender.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.sender(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.receiver.label(class="form-control-label") }}
+                {% if form.receiver.errors %}
+                    {{ form.receiver(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.receiver.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.receiver(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.weight.label(class="form-control-label") }}
+                {% if form.weight.errors %}
+                    {{ form.weight(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.weight.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.weight(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.delivery_address.label(class="form-control-label") }}
+                {% if form.delivery_address.errors %}
+                    {{ form.delivery_address(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.delivery_address.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.delivery_address(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.delivery_office_id.label(class="form-control-label") }}
+                {% if form.delivery_office_id.errors %}
+                    {{ form.delivery_office_id(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.delivery_office_id.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.delivery_office_id(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            {% if form.sender_address %}
+            
+                <div class="form-group">
+                    {{ form.sender_address.label(class="form-control-label") }}
+                    {% if form.sender_address.errors %}
+                        {{ form.sender_address(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.sender_address.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.sender_address(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if form.is_express %}
+                <div class="form-group form-check">
+                    {% if form.is_express.errors %}
+                        {{ form.is_express(class="form-check-input is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.is_express.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.is_express(class="form-check-input") }}
+                    {% endif %}
+                    {{ form.is_express.label(class="form-check-label") }}
+                </div>
+            {% endif %}
+            
+            {% if form.sender_office_id %}
+                <div id="sender-office-section" class="form-group">
+                    {{ form.sender_office_id.label(class="form-control-label") }}
+                    {% if form.sender_office_id.errors %}
+                        {{ form.sender_office_id(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.sender_office_id.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.sender_office_id(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            {% endif %}
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+    </div>
+</div>
+
+
+<script src = "{{ url_for('static', filename='scssAndJs/js/shipment/script.js') }}"></script>
+
+{% endblock %}

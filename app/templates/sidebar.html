@@ -1,11 +1,11 @@
 <div class="profile__menu">
-    <a href="#">Tracking</a>
-    <a href="#">Packages</a>
+    <a href="{{url_for('shipment.show')}}">Tracking</a>
+    <a href="{{url_for('shipment.show')}}">Shipments</a>
     {% if current_user.has_role(Role.EMPLOYEE) %}
-        <a href="#">Employees</a>
+        <a href="{{url_for('employee.show')}}">Employees</a>
     {% endif %}
     {% if current_user.has_role(Role.EMPLOYEE) %}
-        <a href="#">Offices</a>
+        <a href="{{url_for('office.show')}}">Offices</a>
     {% endif %}
-    <a href="#">Settings</a>
+    <!-- <a href="#">Settings</a> -->
 </div>

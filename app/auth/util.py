@@ -78,7 +78,7 @@ def login_required(view_func):
     @wraps(view_func)
     def handle_login_requirement(*args, **kwargs):
         if current_user.is_anonymous():
-            flash("You need to be logged in to access this page", "error")
+            flash("You need to be logged in", "danger")
             return redirect(url_for("auth.login", redirect_handler=request.blueprint + "." + view_func.__name__))
         return view_func(*args, **kwargs)
 
@@ -89,8 +89,8 @@ def anonymous_required(view_func):
     @wraps(view_func)
     def handle_anonymous_requirement(*args, **kwargs):
         if current_user.is_authenticated():
-            flash("You are already logged in", "error")
-            return redirect(url_for("main.profile"))
+            flash("You are already logged in", "warning")
+            return redirect(url_for("shipment.show"))
         return view_func(*args, **kwargs)
 
     return handle_anonymous_requirement
@@ -102,7 +102,7 @@ def role_required(role):
         def hanlde_role_requirement(*args, **kwargs):
             if not current_user.has_role(role):
                 flash("You are not authorized to access this page", "danger")
-                return redirect(url_for("main.profile"))
+                return redirect(url_for("shipment.show"))
             return view_func(*args, **kwargs)
         return hanlde_role_requirement
         

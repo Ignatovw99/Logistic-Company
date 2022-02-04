@@ -9,9 +9,7 @@ def find_employee_by_id(id):
 
 
 def are_sender_and_delivery_addresses_different(sender_address, delivery_address):
-    if not sender_address.office_id != delivery_address.office_id:
-        return sender_address.address != delivery_address.address
-    return True
+    return sender_address.address != delivery_address.address
 
 
 def calculate_shipment_price(shipment, is_express):

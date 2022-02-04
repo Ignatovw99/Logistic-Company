@@ -2,7 +2,7 @@
     <div class ="overlay has-fade"></div>
 
     <nav class="flex container container--paddingAll flex-jc-sb flex-ai-c">
-        <h1 class = "header__logo">CSCB532</h1>
+        <h1 class = "header__logo">Logistic Company</h1>
 
         <a id= "btnHamburger" href="#" class = "header__toggle hide-for-desktop" >
             <span></span>
@@ -11,12 +11,25 @@
         </a>
 
         <div class="header__links hide-for-mobile">
-            <a href="index.html">Home</a>
-            <a href="#">My profile</a>
-            <a href="#">Delivery</a>
+            
+            {% if current_user.is_anonymous() %}
+                <a href="{{url_for('main.index')}}">Home</a>
+            {% else %}
+                <a href="{{url_for('shipment.show')}}">Shipments</a>
+            {% endif %}
         </div>
 
-        <a href="#" class = "button t hide-for-mobile">Sing up / Log in</a>
+        {% if current_user.is_anonymous() %}
+            <div>
+                <a href="{{url_for('auth.register')}}" class = "button t hide-for-mobile">Sing up</a>
+                <a href="{{url_for('auth.login')}}" class = "button t hide-for-mobile">Login</a>
+            </div>
+        {% else %}
+            <div>
+                <span>Hello, {{ current_user.email }}, role: {{ current_user.find_highest_role().name }}</span>
+                <a href="{{url_for('auth.logout')}}" class = "button t hide-for-mobile">Logout</a>
+            </div>
+        {% endif %}
     </nav>
 
     <div class="header__menu has-fade">

@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+
+{% block title %}- Shipments{% endblock %}
+
+{% block content %}
+    <section class="profile">
+        {% include 'sidebar.html' %}
+        
+        <table class="profile__table" style="margin-top: 3%; margin-bottom: 3%; margin-left: 1%;">
+            <tr class = "tbhead">
+                <th>ID</th>
+                <th>Status</th>
+                <th>Sent date</th>
+                <th>Weight</th>
+                <th>Price</th>
+                <th>Location</th>
+                <th>Sender</th>
+                <th>Receiver</th>
+                <th>Sender address</th>
+                <th>Delivery address</th>
+            </tr>
+            {% for shipment in shipments %}
+            <tr>
+                <td>{{ shipment.id }}</td>
+                <td>{{ shipment.status.name }}</td>
+                <td>{{ shipment.sent_date }}</td>
+                <td>{{ shipment.weight }}</td>
+                <td>{{ shipment.price }}</td>
+                <td>{{ shipment.get_location() }}</td>
+                <td>{{ shipment.sender.email }}</td>
+                <td>{{ shipment.receiver.email }}</td>
+                {% if shipment.from_address.address %}
+                <td>{{ shipment.from_address.address }}</td>
+                {% else %}
+                <td>{{ shipment.from_address.office.address }}</td>
+                {% endif %}
+                
+                {% if shipment.to_address.address %}
+                <td>{{ shipment.to_address.address }}</td>
+                {% else %}
+                <td>{{ shipment.to_address.office.address }}</td>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </table>
+        
+
+    </section>
+{% endblock %}

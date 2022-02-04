@@ -1,5 +1,5 @@
 <div class="profile__menu">
-    <a href="{{url_for('shipment.show')}}">Tracking</a>
+    <a href="{{url_for('shipment.track_shipments')}}">Tracking</a>
     <a href="{{url_for('shipment.show')}}">Shipments</a>
     {% if current_user.has_role(Role.EMPLOYEE) %}
         <a href="{{url_for('employee.show')}}">Employees</a>

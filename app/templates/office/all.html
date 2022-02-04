@@ -5,7 +5,7 @@
 
 {% block content %}
     <div style="margin-left: 43.5%">
-        <a href="#" class="btn btn-primary">Add Office</a>
+        <a href="{{ url_for('office.create') }}" class="btn btn-primary">Add Office</a>
     </div>
     <section class="profile">
         {% include 'sidebar.html' %}

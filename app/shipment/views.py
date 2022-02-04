@@ -7,6 +7,7 @@ from app.office.util import find_office_by_id
 from app.shipment.forms import ShipmentCourierForm, ShipmentForm
 from app.shipment.util import (
     calculate_shipment_price,
+    find_active_shipments_by_user,
     find_employee_by_id,
     are_sender_and_delivery_addresses_different,
     find_shipments_by_employee,
@@ -22,6 +23,13 @@ def show():
     current_employee = find_employee_by_id(current_user.id)
     shipments = find_shipments_by_employee(current_employee) if current_employee else find_shipments_by_user(current_user)
     return render_template("shipment/all.html", shipments=shipments)
+
+
+@shipment.route("/tracking")
+@login_required
+def track_shipments():
+    shipments = find_active_shipments_by_user(current_user.id)
+    return render_template("shipment/tracking.html", shipments=shipments)
 
 
 @shipment.route("/create", methods=["GET", "POST"])

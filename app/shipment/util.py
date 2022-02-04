@@ -101,3 +101,16 @@ def find_shipments_by_user(user):
                 filter((sender_alias.id == user.id) | (receiver_alias.id == user.id)).\
                 order_by(Shipment.status.asc(), Shipment.sent_date.asc()).\
                 all()
+
+
+def find_active_shipments_by_user(user_id):
+    sender_alias = aliased(User)
+    receiver_alias = aliased(User)
+
+    return Shipment.query.\
+            filter(Shipment.status != ShippingStatus.DELIVERED).\
+            join(sender_alias, Shipment.sender).\
+            join(receiver_alias, Shipment.receiver).\
+            filter((sender_alias.id == user_id) | (receiver_alias.id == user_id)).\
+            order_by(Shipment.sent_date.asc()).\
+            all()

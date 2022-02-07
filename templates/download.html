@@ -1,37 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <title>Title</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+    <title>Download reports</title>
 </head>
 <body>
 <div style="margin: 10px 0 0 10px;width: 600px">
-    <h2>Download reports</h2>
-  <a href="{{ url_for('download_report_employees') }}">Employees report</a>
-      <a href="{{ url_for('download_report_clients') }}">Clients report</a>
-      <a href="{{ url_for('download_report_shipments') }}">Shipments report</a>
+<div class="container">
+	<div class="row">
+		<div class='panel panel-default'>
+									<div class='panel-heading'>Download reports</div>
+									<div class='panel-body'>
+<br>
+  <a style="margin-right:2rem;" href="{{ url_for('download_report_employees') }}">Employees report</a>
+      <a style="margin-right:2rem;" href="{{ url_for('download_report_clients') }}">Clients report</a>
+      <a style="margin-right:2rem;" href="{{ url_for('download_report_shipments') }}">Shipments report</a>
+      <a href="{{ url_for('download_report_logistic_company_revenue') }}">Revenue report</a>
+<br><br><br>
      <form action="{{url_for('download_report_shipments_by_sender')}}" method="POST">
-                Filter by sender id:<input type="number"  name="id_sender" value={{ id }}>
-                  <button class="btn btn-primary" type="submit">Report</button>
-              </form>
+         <label class="col-sm-3 control-label">Download report by sender email:</label>
+         <div class="col-sm-8">
+         <input type="text" class="form-control input-lg"  name="email_sender" value={{ id }}>
+         </div>
+                  <button class="btn btn-primary" type="submit">Download</button>
+              </form><br><br><br>
+
             <form action="{{url_for('download_report_shipments_by_receiver')}}" method="POST">
-                Filter by receiver id:<input type="number"  name="id_receiver" value="">
-                  <button class="btn btn-primary" type="submit">Report</button>
-              </form>
+                <label class="col-sm-3 control-label">Download report by receiver email:</label>
+                <div class="col-sm-8">
+                <input type="text" class="form-control input-lg"  name="email_receiver" value="">
+                </div>
+                  <button class="btn btn-primary" type="submit">Download</button>
+              </form> <br><br><br>
+
             <form action="{{url_for('download_report_shipments_by_employee')}}" method="POST">
-                 Filter by employee's id:<input type="number"  name="id_employee" value="">
-                  <button class="btn btn-primary" type="submit">Report</button>
-              </form>
+                <label class="col-sm-3 control-label">Download report by employee's email:</label>
+                <div class="col-sm-8">
+                <input type="text" class="form-control input-lg"  name="email_employee" value="">
+                </div>
+                  <button class="btn btn-primary" type="submit">Download</button>
+            </form><br><br><br>
+
             <form action="{{url_for('download_report_shipments_by_status')}}" method="POST">
-                Filter by status:<select  name="status_filter" value="">
+                <label class="col-sm-3 control-label">Download report by shipment's status:</label>
+            <div class='form-group col-sm-8'>
+                <select class="form-control input-lg"  name="status_filter" value="">
                          {% for status in statuses %}
                         <option value={{status}}> {{status}}</option>
                         {% endfor %}
 
                     </select>
-                  <button class="btn btn-primary" type="submit">Report</button>
+            </div>
+                  <button class="btn btn-primary" type="submit">Download</button>
               </form>
 
     </div>
+
+        </div></div></div></div></div></div>
 </body>
 </html>

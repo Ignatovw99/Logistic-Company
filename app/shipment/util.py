@@ -67,13 +67,21 @@ def find_shipments_in_office(office):
     from_address_alias = aliased(ShippingAddress)
     to_address_alias = aliased(ShippingAddress)
 
-    return Shipment.query.\
-            filter((Shipment.status == ShippingStatus.READY_TO_PACK) | (Shipment.status == ShippingStatus.ARRIVED)).\
+    shipments_in_office_to_pack = Shipment.query.\
+            filter(Shipment.status == ShippingStatus.READY_TO_PACK).\
             join(from_address_alias, Shipment.from_address).\
-            join(to_address_alias, Shipment.to_address).\
-            filter((from_address_alias.office_id == office.id) | (to_address_alias.office_id == office.id)).\
-            order_by(Shipment.status.asc(), Shipment.sent_date.asc()).\
+            filter(from_address_alias.office_id == office.id).\
+            order_by(Shipment.sent_date.asc()).\
             all()
+
+    shipments_in_office_to_deliver = Shipment.query.\
+            filter(Shipment.status == ShippingStatus.ARRIVED).\
+            join(to_address_alias, Shipment.to_address).\
+            filter(to_address_alias.office_id == office.id).\
+            order_by(Shipment.sent_date.asc()).\
+            all()
+
+    return [*shipments_in_office_to_pack, *shipments_in_office_to_deliver]
 
 
 def find_shipments_by_employee(employee):

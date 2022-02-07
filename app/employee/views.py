@@ -123,7 +123,9 @@ def delete(id):
             flash("You are not allowed to delete the sys admin", "danger")
         else:
             #Deleting an employee don't remove the shipments related to this employee!
+            user = employee.user
             delete_model(employee)
+            delete_model(user)
             flash("Employee deleted successfully", "success")
 
     return redirect(url_for("employee.show"))

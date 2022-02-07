@@ -19,15 +19,15 @@ def send_for_packing(shipment_id):
     shipment = find_shipment_by_id(shipment_id)
 
     if not shipment:
-        flash("Shipment does not exist")
+        flash("Shipment does not exist", "danger")
     elif shipment.status != ShippingStatus.ACCEPTED:
-        flash("Shipment cannot be sent for packing")
+        flash("Shipment cannot be sent for packing", "warning")
     elif not current_employee.is_courier() or not shipment.acceptor == current_employee:
-        flash("Only the courier who accepted this shipment can send a it for packing")
+        flash("Only the courier who accepted this shipment can send a it for packing", "warning")
     else:
         shipment.status = ShippingStatus.READY_TO_PACK
         commit_db_transaction()
-        flash("Shipment was sent for packing")
+        flash("Shipment was sent for packing", "success")
 
     return redirect(url_for("shipment.show"))
 
@@ -40,15 +40,15 @@ def pack(shipment_id):
     shipment = find_shipment_by_id(shipment_id)
 
     if not shipment:
-        flash("Shipment does not exist")
+        flash("Shipment does not exist", "danger")
     elif shipment.status != ShippingStatus.READY_TO_PACK:
-        flash("Shipment cannot be packed")
+        flash("Shipment cannot be packed", "warning")
     elif shipment.from_address.office != current_employee.office:
-        flash("Only an employee who works in the shipment's sender office can pack this shipment")
+        flash("Only an employee who works in the shipment's sender office can pack this shipment", "warning")
     else:
         shipment.status = ShippingStatus.READY_TO_SHIP
         commit_db_transaction()
-        flash("Shipment was packed and it is ready for shipping")
+        flash("Shipment was packed and it is ready for shipping", "success")
 
     return redirect(url_for("shipment.show"))
 
@@ -61,16 +61,16 @@ def load(shipment_id):
     shipment = find_shipment_by_id(shipment_id)
     
     if not shipment:
-        flash("Shipment does not exist")
+        flash("Shipment does not exist", "danger")
     elif shipment.status != ShippingStatus.READY_TO_SHIP:
-        flash("Shipment cannot be loaded")
+        flash("Shipment cannot be loaded", "warning")
     elif not current_employee.is_courier():
-        flash("Only a courier can loaded shipments")
+        flash("Only a courier can loaded shipments", "warning")
     else:
         shipment.status = ShippingStatus.ON_ITS_WAY
         shipment.transported_by = current_employee
         commit_db_transaction()
-        flash("Shipment was loaded")
+        flash("Shipment was loaded", "success")
 
     return redirect(url_for("shipment.show"))
 
@@ -83,14 +83,15 @@ def transport(shipment_id):
     shipment = find_shipment_by_id(shipment_id)
 
     if not shipment:
-        flash("Shipment does not exist")
+        flash("Shipment does not exist", "danger")
     elif shipment.status != ShippingStatus.ON_ITS_WAY:
-        flash("Shipment cannot be transported")
+        flash("Shipment cannot be transported", "warning")
     elif current_employee != shipment.transported_by:
-        flash("Only the courier who loaded the shipment can transport it")
+        flash("Only the courier who loaded the shipment can transport it", "warning")
     else:
         shipment.status = ShippingStatus.ARRIVED
         commit_db_transaction()
+        flash("Shipment was transported to the delivery destination", "success")
 
     return redirect(url_for("shipment.show"))
 
@@ -103,17 +104,18 @@ def send_to_address(shipment_id):
     shipment = find_shipment_by_id(shipment_id)
 
     if not shipment:
-        flash("Shipment does not exist")
+        flash("Shipment does not exist", "danger")
     elif shipment.status != ShippingStatus.ARRIVED:
-        flash("Shipment cannot be shipped to the customer")
+        flash("Shipment cannot be shipped to the customer", "warning")
     elif not current_employee.is_courier():
-        flash("Shipment cannot be shipped by an office employee")
+        flash("Shipment cannot be shipped by an office employee", "warning")
     elif not shipment.to_address.address:
-        flash("Shipment without delivery address. You cannot ship it")
+        flash("Shipment without delivery address. You cannot ship it", "warning")
     else:
         shipment.deliverer = current_employee
         shipment.status = ShippingStatus.TRAVELING_TO_YOUR_ADDRESS
         commit_db_transaction()
+        flash("Shipment was sent to the delivery address", "success")
     
     return redirect(url_for("shipment.show"))
 
@@ -126,19 +128,19 @@ def deliver_shipment(shipment_id):
     shipment = find_shipment_by_id(shipment_id)
 
     if not shipment:
-        flash("Shipment does not exist")
-    elif not shipment.status == ShippingStatus.ARRIVED or not shipment.status == ShippingStatus.TRAVELING_TO_YOUR_ADDRESS:
-        flash("Shipment cannot be given to the customer")
+        flash("Shipment does not exist", "danger")
+    elif not shipment.status == ShippingStatus.ARRIVED and not shipment.status == ShippingStatus.TRAVELING_TO_YOUR_ADDRESS:
+        flash("Shipment cannot be given to the customer", "warning")
     elif shipment.status == ShippingStatus.ARRIVED and current_employee.is_courier():
-        flash("Shipment in status ARRIVED can be delivered only by an office employee")
-    elif shipment.status == ShippingStatus.TRAVELING_TO_YOUR_ADDRESS and shipment.deliverer == current_employee:
-        flash("Shipment in status TRAVELING_TO_YOUR_ADDRESS can be delivered only by the given deliverer")
+        flash("Shipment in status ARRIVED can be delivered only by an office employee", "warning")
+    elif shipment.status == ShippingStatus.TRAVELING_TO_YOUR_ADDRESS and not shipment.deliverer == current_employee:
+        flash("Shipment in status TRAVELING_TO_YOUR_ADDRESS can be delivered only by the given deliverer", "warning")
     else:
         if not shipment.deliverer:
             shipment.deliverer = current_employee
             
-        # TODO: reduce the price if there is a delivery address
         shipment.status = ShippingStatus.DELIVERED
         commit_db_transaction()
+        flash("Shipment was delivered to the customer", "success")
     
     return redirect(url_for("shipment.show"))

@@ -377,6 +377,9 @@ h2 {
   color: white;
   padding: 2.5rem;
   text-align: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 }
 
 .footer a {
@@ -622,28 +625,141 @@ h2 {
 }
 
 .login {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  background-color: #f4f4f4;
+  background: #f4f4f4;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.login__menu {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+.login__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  width: 400px;
+  background: white;
+  border: 2px solid #2d314d;
+  border-radius: 10px;
 }
 
-.login__menu form {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+.login__center h1 {
+  text-align: center;
+  padding: 0 0 20px 0;
+  border-bottom: 1px solid #2d314d;
+}
+
+.login__center form {
+  padding: 0 40px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.login__center form .text {
+  position: relative;
+  border-bottom: 2px solid #2d314d;
+  margin: 30px 0;
+}
+
+.login__center form .text input {
+  width: 100%;
+  padding: 0 5px;
+  height: 40px;
+  font-size: 16px;
+  border: none;
+}
+
+.login__center form .signup_link {
+  margin: 30px 0;
+  text-align: center;
+  font-size: 16px;
+}
+
+.login__center form .signup_link a {
+  color: #2bb7da;
+}
+
+.login__center form .signup_link a:hover {
+  text-decoration: underline;
+}
+
+.login__center input[type="submit"] {
+  width: 100%;
+  height: 50px;
+  border: 1px solid #2d314d;
+  background: -webkit-gradient(linear, left top, right top, from(#31d35c), to(#2bb7da));
+  background: linear-gradient(to right, #31d35c, #2bb7da);
+  border-radius: 25px;
+  font-size: 18px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.login__center input[type="submit"]:hover {
+  background: -webkit-gradient(linear, right top, left top, from(#31d35c), to(#2bb7da));
+  background: linear-gradient(to left, #31d35c, #2bb7da);
+}
+
+.signup {
+  background: #f4f4f4;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.signup__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  width: 400px;
+  background: white;
+  border: 2px solid #2d314d;
+  border-radius: 10px;
+}
+
+.signup__center h1 {
+  text-align: center;
+  padding: 0 0 20px 0;
+  border-bottom: 1px solid #2d314d;
+}
+
+.signup__center form {
+  padding: 0 40px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.signup__center form .text {
+  position: relative;
+  border-bottom: 2px solid #2d314d;
+  margin: 30px 0;
+}
+
+.signup__center form .text input {
+  width: 100%;
+  padding: 0 5px;
+  height: 40px;
+  font-size: 16px;
+  border: none;
+}
+
+.signup__center input[type="submit"] {
+  width: 100%;
+  height: 50px;
+  border: 1px solid #2d314d;
+  background: -webkit-gradient(linear, left top, right top, from(#31d35c), to(#2bb7da));
+  background: linear-gradient(to right, #31d35c, #2bb7da);
+  border-radius: 25px;
+  font-size: 18px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
+.signup__center input[type="submit"]:hover {
+  background: -webkit-gradient(linear, right top, left top, from(#31d35c), to(#2bb7da));
+  background: linear-gradient(to left, #31d35c, #2bb7da);
 }
 /*# sourceMappingURL=style.css.map */

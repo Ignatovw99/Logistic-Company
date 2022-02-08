@@ -22,6 +22,13 @@ shipment = Blueprint("shipment", __name__)
 def show():
     current_employee = find_employee_by_id(current_user.id)
     shipments = find_shipments_by_employee(current_employee) if current_employee else find_shipments_by_user(current_user)
+
+    if len(shipments) == 0:
+        if current_employee:
+            flash("You don't have any shipments to process", "info")
+        else:
+            flash("You have no registered shipments yet", "info")
+
     return render_template("shipment/all.html", shipments=shipments)
 
 
@@ -29,6 +36,8 @@ def show():
 @login_required
 def track_shipments():
     shipments = find_active_shipments_by_user(current_user.id)
+    if len(shipments) == 0:
+        flash("You currently have no active shipments", "info")
     return render_template("shipment/tracking.html", shipments=shipments)
 
 

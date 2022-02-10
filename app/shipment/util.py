@@ -85,7 +85,9 @@ def find_shipments_in_office(office):
 
 
 def find_shipments_by_employee(employee):
-    if employee.is_courier():
+    if employee.user.has_role(Role.ROOT):
+        shipments = Shipment.query.all()
+    elif employee.is_courier():
         shipments = find_accepted_shipments_by_courier(employee.id)
         shipments.extend(find_shipments_on_its_way_by_courier(employee.id))
         shipments.extend(find_shipments_to_deliver_to_customer(employee.id))
@@ -93,6 +95,7 @@ def find_shipments_by_employee(employee):
         shipments.extend(find_shipments_to_deliver_from_office())
     else:
         shipments = find_shipments_in_office(employee.office)
+        
     return shipments
 
 

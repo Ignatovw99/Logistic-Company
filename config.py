@@ -19,6 +19,8 @@ class Config():
     PRICE_EXPRESS_OFFICE = 10
     PRICE_EXPRESS_ADDRESS = 15
 
+    REDIRECT_QUERY_PARAM = "redirect_handler"
+
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_ECHO = True

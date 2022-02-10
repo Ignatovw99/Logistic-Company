@@ -4,9 +4,11 @@
 {% block table_name %}Offices{% endblock %}
 
 {% block content %}
+    {% if current_user.has_role(Role.ADMIN) %}
     <div style="margin-left: 43.5%">
         <a href="{{ url_for('office.create') }}" class="btn btn-primary">Add Office</a>
     </div>
+    {% endif %}
     <section class="profile">
         {% include 'sidebar.html' %}
 

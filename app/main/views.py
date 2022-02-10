@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app as app, render_template, jsonify, request, flash, redirect, url_for, Response
 from app import csrf
 from app import auth
-from app.auth.util import current_user, anonymous_required, role_required
+from app.auth.util import current_user, anonymous_required, login_required, role_required
 from app.models import User, Role, Office, ShippingStatus, Shipment, ShippingAddress, Employee
 
 from sqlalchemy import exists, or_, and_
@@ -374,6 +374,8 @@ def download_report_shipments_by_sender():
 
 
 @main.route('/download/report/', methods=['GET', 'POST'])
+@login_required
+@role_required(Role.ADMIN)
 @csrf.exempt
 def download_report():
     status_list = [ShippingStatus.ACCEPTED, ShippingStatus.READY_TO_PACK, ShippingStatus.READY_TO_SHIP,ShippingStatus.ON_ITS_WAY,

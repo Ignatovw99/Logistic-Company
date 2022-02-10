@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, request, url_for
+from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
 
 from app.models import User, Role
 
@@ -42,19 +42,21 @@ def register():
 def login():
     form = LoginForm()
 
+    if request.method == "GET" and current_app.config["REDIRECT_QUERY_PARAM"] in request.args:
+        form.redirect.data = request.args[current_app.config["REDIRECT_QUERY_PARAM"]]
+
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
         remember_me = form.remember.data
+        redirect_data = form.redirect.data
 
         user = find_user_by_email(email)
 
         if user and user.verify_password(password):
             login_user(user)
             
-            redirect_handler = "shipment.show"
-            if "redirect_handler" in request.args:
-                redirect_handler = request.args["redirect_handler"]
+            redirect_handler = redirect_data if redirect_data else "shipment.show"
             response = redirect(url_for(redirect_handler))
             
             if remember_me:

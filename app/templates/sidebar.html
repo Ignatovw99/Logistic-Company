@@ -8,6 +8,6 @@
         <a href="{{url_for('office.show')}}">Offices</a>
     {% endif %}
     {% if current_user.has_role(Role.ADMIN) %}
-        <a href="{{ url_for('download_report') }}">Reports</a>
+        <a href="{{ url_for('main.download_report') }}">Reports</a>
     {% endif %}
 </div>
